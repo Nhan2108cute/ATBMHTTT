@@ -6,8 +6,8 @@
   <packaging>war</packaging>
   <version>1.0-SNAPSHOT</version>
   <properties>
-    <maven.compiler.source>19</maven.compiler.source>
-    <maven.compiler.target>19</maven.compiler.target>
+    <maven.compiler.source>17</maven.compiler.source>
+    <maven.compiler.target>17</maven.compiler.target>
   </properties>
   <name>ATBMHTTT Maven Webapp</name>
   <url>https://maven.apache.org</url>
