@@ -16,7 +16,7 @@
     <link rel="stylesheet" href="css/plugins.css"/>
     <link rel="stylesheet" href="css/main.css"/>
     <link rel="shortcut icon" type="image/x-icon" href="image/favicon.ico">
-    <title>Pickle Tiền</title>
+    <title>Petmark ❤️</title>
 </head>
 <body class="petmark-theme-2">
 <div class="site-wrapper">
@@ -36,7 +36,7 @@
                             <div class="container">
                                 <div class="row">
                                     <div class="col-lg-10">
-                                        <h2><span class="text-primary">Pickle Tiền</span> cửa hàng <br> Tiền Phong Thủy</h2>
+                                        <h2><span class="text-primary">Petmark</span> cửa hàng <br> thuốc thú y</h2>
                                         <h4 class="mt--30">Lựa chọn tốt nhất cho thú cưng của bạn</h4>
                                         <div class="slider-btn mt--30">
                                             <a href="list-product" class="btn btn-outlined--white btn-rounded">

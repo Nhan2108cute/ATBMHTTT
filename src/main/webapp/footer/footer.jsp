@@ -13,7 +13,7 @@
                 <div class="single-footer contact-block">
                     <h3 class="footer-title">Thông tin liên hệ</h3>
                     <div class="single-footer-content">
-                        <p class="text-italic">Pickle Tiền – Uy tín tạo niềm tin!</p>
+                        <p class="text-italic">PetMark cung cấp sản phẩm chất lượng, phù hợp với nhu cầu sử dụng, đảm bảo sức khỏe chăn nuôi</p>
                         <p class="font-weight-500 text-white"><span class="d-block"></span>
                             Đại học Nông Lâm Tp.HCM<br> +84-012-345-678</p>
                         <p class="social-icons">
@@ -55,7 +55,7 @@
                     <h3 class="footer-title">Theo dõi chúng tôi</h3>
                     <div class="single-footer-content">
                         <p>
-                            Đăng ký Pickle Tiền để nhận thông tin cập nhật về sản phẩm mới, những ưu đãi đặc biệt và chương trình giảm giá khác.
+                            Đăng ký PetMark để nhận thông tin cập nhật về sản phẩm mới, những ưu đãi đặc biệt và chương trình giảm giá khác.
                         </p>
                         <div class="pt-2">
                             <div class="input-box-with-icon">
@@ -78,6 +78,6 @@
         </div>
     </div>
     <div class="footer-copyright">
-        <p>© Pickle Tiền, 2024. Nhóm 48 ATBMHTTT </p>
+        <p>© Petmark, 2022. Thiết kế bởi Nhóm 30 ❤️ </p>
     </div>
 </footer>
