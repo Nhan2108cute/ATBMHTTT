@@ -21,7 +21,7 @@ public class ProductControl extends HttpServlet {
             response.sendRedirect("login");
         } else {
             if (u.getAdmin() == 1) {
-                response.sendRedirect("product-control");
+                response.sendRedirect("home");
             } else {
                 DAO dao = new DAO();
                 List<Product> list = dao.getAllProduct();
