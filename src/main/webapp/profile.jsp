@@ -18,7 +18,19 @@
     <link rel="shortcut icon" type="image/x-icon" href="image/favicon.ico">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.0/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-
+    <style>
+        .popup {
+            position: absolute;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+    </style>
     <title>Petmark ❤️</title>
 </head>
 <body class="">
@@ -217,7 +229,7 @@
                                         <form action="#" method="post" id="revokeKeyForm">
                                             <div class="row justify-content-center mt-3">
                                                 <div class="col-12 col-md-6 text-center">
-                                                    <p class="text-danger">Đưa key về trạng thái không chấp nhận mới</p>
+                                                    <p class="text-danger">Đưa key về trạng thái bị vô hiệu hoá</p>
                                                     <button id="revokeKeyBtn" class="btn btn-danger" type="submit">Yêu
                                                         cầu
                                                     </button>
@@ -231,14 +243,39 @@
                                         <form action="#" method="post" id="generateNewKeyForm">
                                             <div class="row justify-content-center mt-3">
                                                 <div class="col-12 col-md-6 text-center">
-                                                    <p class="text-danger">Tạo key mới khi đã đưa key về trạng thái
-                                                        không chấp nhận</p>
+                                                    <p class="text-danger">Khách hàng chưa có key, hãy nhấn tạo key mới</p>
                                                     <button id="genKeyBtn" class="btn btn-success" type="submit">Tạo key
                                                         mới
                                                     </button>
                                                 </div>
                                             </div>
                                         </form>
+                                        <div class="popup">
+                                            <div class="popup-content">
+                                            <form action="add" method="post">
+                                                <div class="">
+                                                    <label class="control-label">Public Key</label>
+                                                    <input class="form-control" name="name" type="text" class="form-control" required>
+                                                </div>
+                                                <div class="">
+                                                    <input type="button" class="btn btn-default" data-dismiss="modal" value="Export" style="float: right">
+                                                    <input type="submit" class="btn btn-success" value="Import" style="float: right">
+                                                </div>
+                                                <div class="">
+                                                    <label class="control-label">Private Key</label>
+                                                    <input class="form-control" name="image" type="text" class="form-control" required>
+                                                </div>
+                                                <div class="">
+                                                    <input type="button" class="btn btn-default" data-dismiss="modal" value="Export" style="float: right">
+                                                    <input type="submit" class="btn btn-success" value="Import" style="float: right">
+                                                </div>
+                                                <div class="">
+                                                    <input type="button" class="btn btn-default close" data-dismiss="modal" value="Hủy" style="float: right">
+                                                    <input type="submit" class="btn btn-success" value="Thêm" style="float: right">
+                                                </div>
+                                            </form>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
 
@@ -383,6 +420,13 @@
 
     // Run the function when the page is loaded
     pollForDataChange();
+
+    document.getElementById("genKeyBtn").addEventListener("click", function () {
+        document.querySelector(".popup").style.display = "flex";
+    })
+    document.querySelector(".close").addEventListener("click", function () {
+        document.querySelector(".popup").style.display = "none";
+    })
 
 
 </script>
