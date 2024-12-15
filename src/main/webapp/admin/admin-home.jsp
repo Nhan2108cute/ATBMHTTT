@@ -58,7 +58,7 @@
         <li><a class="app-menu__item" href="product-control"><i
                 class='app-menu__icon bx bx-purchase-tag-alt'></i><span class="app-menu__label">Quản lý sản phẩm</span></a>
         </li>
-      <li><a class="app-menu__item" href="category-control"><i
+        <li><a class="app-menu__item" href="category-control"><i
                 class='app-menu__icon bx bx-purchase-tag-alt'></i><span class="app-menu__label">Quản lý Danh mục</span></a>
         </li>
     </ul>
@@ -103,7 +103,7 @@
                     <div class="widget-small warning coloured-icon"><i class='icon bx bxs-shopping-bags fa-3x'></i>
                         <div class="info">
                             <h4>Tổng đơn hàng</h4>
-                            <p><b>247 đơn hàng</b></p>
+                            <p><b>${totalB} đơn hàng</b></p>
                             <p class="info-tong">Tổng số hóa đơn bán hàng trong tháng.</p>
                         </div>
                     </div>

@@ -61,7 +61,7 @@
         <li><a class="app-menu__item " href="product-control"><i
                 class='app-menu__icon bx bx-purchase-tag-alt'></i><span class="app-menu__label">Quản lý sản phẩm</span></a>
         </li>
-      <li><a class="app-menu__item" href="category-control"><i
+        <li><a class="app-menu__item" href="category-control"><i
                 class='app-menu__icon bx bx-purchase-tag-alt'></i><span class="app-menu__label">Quản lý Danh mục</span></a>
         </li>
         <li><a class="app-menu__item active" href="bill-control"><i
@@ -81,11 +81,11 @@
             <div class="tile">
                 <div class="tile-body">
                     <div class="row element-button">
-                      <%--  <div class="col-sm-2">
-                            <a class="btn btn-add btn-sm" href="#" title="Thêm" id="show-emp" data-toggle="modal"
-                               data-target="#ModalUP"><i class="fas fa-plus"></i>
-                                Tạo mới sản phẩm</a>
-                        </div>--%>
+                        <%--  <div class="col-sm-2">
+                              <a class="btn btn-add btn-sm" href="#" title="Thêm" id="show-emp" data-toggle="modal"
+                                 data-target="#ModalUP"><i class="fas fa-plus"></i>
+                                  Tạo mới sản phẩm</a>
+                          </div>--%>
                     </div>
                     <table class="table table-hover table-bordered" id="sampleTable">
                         <thead>

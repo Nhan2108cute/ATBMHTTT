@@ -22,11 +22,17 @@ public class AdminHomeControl extends HttpServlet {
                 response.sendRedirect("home");
             } else {
                 DAO dao = new DAO();
+                int totalU = dao.getTotalUser();
+                int totalP = dao.getTotalProduct();
+                int totalB = dao.getTotalBill();
+                //int totalPAOOS = dao.getTotalProductAlmostOutOfStock();
                 List<User> listU = dao.getNewUser();
 
                 request.setAttribute("user", u);
-                request.setAttribute("totalU", dao.getTotalUser());
-                request.setAttribute("totalP", dao.getTotalProduct());
+                request.setAttribute("totalU", totalU);
+                request.setAttribute("totalP", totalP);
+                request.setAttribute("totalB", totalB);
+                //request.setAttribute("totalPAOOS", totalPAOOS);
                 request.setAttribute("listU", listU);
                 request.getRequestDispatcher("admin/admin-home.jsp").forward(request, response);
             }
