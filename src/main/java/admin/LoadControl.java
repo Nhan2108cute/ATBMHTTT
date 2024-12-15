@@ -21,7 +21,7 @@ public class LoadControl extends HttpServlet {
             response.sendRedirect("login");
         } else {
             if (u.getAdmin() == 1) {
-                response.sendRedirect("loadProduct");
+                response.sendRedirect("home");
             } else {
                 String id = request.getParameter("pID");
                 DAO dao = new DAO();
