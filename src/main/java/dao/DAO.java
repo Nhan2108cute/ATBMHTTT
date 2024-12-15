@@ -468,6 +468,36 @@ public class DAO {
         return list;
     }
 
+    public int getTotalBill() {
+        String query = "Select count(*) from hoadon";
+        try {
+            conn = new DBConnect().getConnection();
+            ps = conn.prepareStatement(query);
+            rs = ps.executeQuery();
+            while (rs.next()) {
+                return rs.getInt(1);
+            }
+
+        } catch (Exception e) {
+        }
+        return 0;
+    }
+
+//    public int getTotalProductAlmostOutOfStock() {
+//        String query = "Select count(*) from sanpham";
+//        try {
+//            conn = new DBConnect().getConnection();
+//            ps = conn.prepareStatement(query);
+//            rs = ps.executeQuery();
+//            while (rs.next()) {
+//                return rs.getInt(1);
+//            }
+//
+//        } catch (Exception e) {
+//        }
+//        return 0;
+//    }
+
     public int getTotalUser() {
         String query = "Select count(*) from nguoidung";
         try {

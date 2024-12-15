@@ -19,7 +19,7 @@ public class UserControl extends HttpServlet {
             response.sendRedirect("login");
         } else {
             if (u.getAdmin() == 1) {
-                response.sendRedirect("home");
+                response.sendRedirect("user-control");
             } else {
                 DAO dao = new DAO();
                 List<User> list = dao.getAllUser();
