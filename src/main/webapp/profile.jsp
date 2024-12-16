@@ -20,7 +20,7 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
     <style>
         .popup {
-            position: absolute;
+            position: fixed;
             top: 0;
             width: 100%;
             height: 100%;
@@ -30,6 +30,89 @@
             align-items: center;
             text-align: center;
         }
+        .popup-content {
+            position: relative;
+            background: #fff;
+            width: 75%;
+            height: 75%;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: left;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f9;
+        }
+        .key-size {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .key-size select {
+            padding: 5px;
+            font-size: 16px;
+        }
+
+        .key-size span {
+            font-weight: bold;
+            margin: 0 10px;
+        }
+
+        .keys {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .key-section {
+            flex: 1;
+            margin-right: 10px;
+        }
+
+        .key-section h3 {
+            margin: 0 0 5px;
+        }
+
+        textarea {
+            width: 100%;
+            height: 150px;
+            resize: none;
+            padding: 10px;
+            font-family: monospace;
+            font-size: 12px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        .btn-group {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 10px;
+        }
+
+        .btn-group button, .actions button {
+            padding: 8px 12px;
+            font-size: 14px;
+            border: none;
+            cursor: pointer;
+            background-color: #007BFF;
+            color: #fff;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+
+        .btn-group button:hover, .actions button:hover {
+            background-color: #0056b3;
+        }
+
+        .actions {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 20px;
+        }
+
     </style>
     <title>Petmark ❤️</title>
 </head>
@@ -240,40 +323,14 @@
                                         <hr class="my-4">
 
                                         <!-- Form tạo key mới -->
-                                        <form action="#" method="post" id="generateNewKeyForm">
+                                        <div action="#" method="post">
                                             <div class="row justify-content-center mt-3">
                                                 <div class="col-12 col-md-6 text-center">
-                                                    <p class="text-danger">Khách hàng chưa có key, hãy nhấn tạo key mới</p>
-                                                    <button id="genKeyBtn" class="btn btn-success" type="submit">Tạo key
-                                                        mới
+                                                    <p class="text-danger">Khách hàng chưa có key, hãy nhấn tạo key
+                                                        mới</p>
+                                                    <button id="genKeyBtn" class="btn btn-success">Tạo key mới
                                                     </button>
                                                 </div>
-                                            </div>
-                                        </form>
-                                        <div class="popup">
-                                            <div class="popup-content">
-                                            <form action="add" method="post">
-                                                <div class="">
-                                                    <label class="control-label">Public Key</label>
-                                                    <input class="form-control" name="name" type="text" class="form-control" required>
-                                                </div>
-                                                <div class="">
-                                                    <input type="button" class="btn btn-default" data-dismiss="modal" value="Export" style="float: right">
-                                                    <input type="submit" class="btn btn-success" value="Import" style="float: right">
-                                                </div>
-                                                <div class="">
-                                                    <label class="control-label">Private Key</label>
-                                                    <input class="form-control" name="image" type="text" class="form-control" required>
-                                                </div>
-                                                <div class="">
-                                                    <input type="button" class="btn btn-default" data-dismiss="modal" value="Export" style="float: right">
-                                                    <input type="submit" class="btn btn-success" value="Import" style="float: right">
-                                                </div>
-                                                <div class="">
-                                                    <input type="button" class="btn btn-default close" data-dismiss="modal" value="Hủy" style="float: right">
-                                                    <input type="submit" class="btn btn-success" value="Thêm" style="float: right">
-                                                </div>
-                                            </form>
                                             </div>
                                         </div>
                                     </div>
@@ -287,6 +344,57 @@
                     </div>
                 </div>
             </div>
+        </div>
+    </div>
+</div>
+<div class="popup">
+    <div class="popup-content">
+        <div class="row">
+            <div class="form-group  col-md-12">
+                      <span class="thong-tin-thanh-toan">
+                        <h5>Thêm cặp khoá mới</h5>
+                      </span>
+            </div>
+        </div>
+        <div>
+            <form action="add" method="post" id="generateNewKeyForm">
+                <div class="keys">
+                    <div class="key-section">
+                        <label class="control-label">Public Key</label>
+                        <textarea class="form-control" name="name" type="text"
+                               class="form-control" required>
+                            </textarea>
+                        <input type="button" class="btn btn-default"
+                               data-dismiss="modal" value="Export" style="float: right">
+                        <input type="submit" class="btn btn-success" value="Import"
+                               style="float: right">
+                    </div>
+                    <div class="key-section">
+                        <label class="control-label">Private Key</label>
+                        <textarea class="form-control" name="image" type="text"
+                               class="form-control" required>
+                            </textarea>
+                        <input type="button" class="btn btn-default"
+                               data-dismiss="modal" value="Export" style="float: right">
+                        <input type="submit" class="btn btn-success" value="Import"
+                               style="float: right">
+                    </div>
+                </div>
+                <div class="key-size">
+                    <span>Độ dài key</span>
+                    <select id="keySize">
+                        <option>512</option>
+                        <option>1024</option>
+                        <option>2048</option>
+                    </select>
+                </div>
+                <div class="">
+                    <input type="button" class="btn btn-default close"
+                           data-dismiss="modal" value="Hủy" style="float: right">
+                    <input type="submit" class="btn btn-success" value="Thêm"
+                           style="float: right">
+                </div>
+            </form>
         </div>
     </div>
 </div>
