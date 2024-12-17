@@ -34,7 +34,7 @@
             position: relative;
             background: #fff;
             width: 75%;
-            height: 75%;
+            height: 55%;
             padding: 20px;
             border-radius: 10px;
             text-align: left;
@@ -45,25 +45,16 @@
             padding: 0;
             background-color: #f4f4f9;
         }
-        .key-size {
+        .randomGenerateKey {
             display: flex;
             align-items: center;
-            margin-bottom: 20px;
-        }
-
-        .key-size select {
-            padding: 5px;
-            font-size: 16px;
-        }
-
-        .key-size span {
-            font-weight: bold;
-            margin: 0 10px;
         }
 
         .keys {
             display: flex;
             justify-content: space-between;
+            margin-top: 10px;
+            margin-bottom: 10px;
         }
 
         .key-section {
@@ -84,6 +75,10 @@
             font-size: 12px;
             border: 1px solid #ccc;
             border-radius: 4px;
+        }
+        .import-export-key {
+            justify-content: center;
+            display: flex;
         }
 
         .btn-group {
@@ -111,6 +106,32 @@
             display: flex;
             justify-content: space-around;
             margin-top: 20px;
+        }
+
+        input.import{
+            margin-top: 5px;
+        }
+        input.export{
+            margin-top: 5px;
+        }
+        input[type="file"]::-webkit-file-upload-button {
+            visibility: hidden; /* Ẩn nút mặc định */
+        }
+
+        input[type="file"]::before {
+            content: "Import";
+            display: inline-block;
+            background-color: #198754;
+            color: white;
+            padding: 0px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            text-align: center;
+        }
+
+        input[type="file"]:hover::before {
+            background-color: #198754;
         }
 
     </style>
@@ -358,35 +379,33 @@
         </div>
         <div>
             <form action="add" method="post" id="generateNewKeyForm">
+                <div class="randomGenerateKey">
+                    <input class="btn btn-success" value="Tạo ngẫu nhiên"
+                           style="float: right">
+                </div>
                 <div class="keys">
                     <div class="key-section">
                         <label class="control-label">Public Key</label>
-                        <textarea class="form-control" name="name" type="text"
-                               class="form-control" required>
+                        <textarea name="publicKeyContent" id="publicKeyContent" type="text" placeholder="Nhập Public Key của bạn ở đây" required>
                             </textarea>
-                        <input type="button" class="btn btn-default"
-                               data-dismiss="modal" value="Export" style="float: right">
-                        <input type="submit" class="btn btn-success" value="Import"
-                               style="float: right">
+                        <div class="import-export-key">
+                            <input type="file" id="importPublicKey" class="btn btn-success import hidden-input" value="Import" onchange="readPublicKeyContent(this)"
+                                   style="float: right">
+                            <input type="button" class="btn btn-default export"
+                                   data-dismiss="modal" value="Export" style="float: right">
+                        </div>
                     </div>
                     <div class="key-section">
                         <label class="control-label">Private Key</label>
-                        <textarea class="form-control" name="image" type="text"
-                               class="form-control" required>
+                        <textarea name="privateKeyContent" id="privateKeyContent" type="text" placeholder="Nhập Private Key của bạn ở đây" required>
                             </textarea>
-                        <input type="button" class="btn btn-default"
-                               data-dismiss="modal" value="Export" style="float: right">
-                        <input type="submit" class="btn btn-success" value="Import"
-                               style="float: right">
+                        <div class="import-export-key">
+                            <input type="file" id="importPrivateKey" class="btn btn-success import hidden-input" value="Import" onchange="readPrivateKeyContent(this)"
+                                   style="float: right">
+                            <input type="button" class="btn btn-default export"
+                                   data-dismiss="modal" value="Export" style="float: right">
+                        </div>
                     </div>
-                </div>
-                <div class="key-size">
-                    <span>Độ dài key</span>
-                    <select id="keySize">
-                        <option>512</option>
-                        <option>1024</option>
-                        <option>2048</option>
-                    </select>
                 </div>
                 <div class="">
                     <input type="button" class="btn btn-default close"
@@ -535,8 +554,61 @@
     document.querySelector(".close").addEventListener("click", function () {
         document.querySelector(".popup").style.display = "none";
     })
+    function readPublicKeyContent() {
+        var input = document.getElementById('importPublicKey');
+        var fileContentElement = document.getElementById('publicKeyContent');
 
+        if (input.files.length > 0) {
+            var file = input.files[0];
+            var reader = new FileReader();
 
+            reader.onload = function (e) {
+                var fileContent = e.target.result;
+                fileContentElement.value = fileContent;
+            };
+
+            // Đọc nội dung của tệp tin
+            reader.readAsText(file);
+        }
+    }
+    function readPublicKeyContent() {
+        var input = document.getElementById('importPublicKey'); // Lấy thẻ input file
+        var publicKeyContentElement = document.getElementById('publicKeyContent'); // Lấy thẻ textarea
+
+        // Kiểm tra nếu đã chọn file
+        if (input.files.length > 0) {
+            var file = input.files[0];
+            var reader = new FileReader();
+
+            // Đọc nội dung file thành công
+            reader.onload = function (e) {
+                var publicKeyContent = e.target.result;
+                publicKeyContentElement.value = publicKeyContent; // Gán nội dung file vào textarea
+            };
+
+            // Đọc file dưới dạng văn bản
+            reader.readAsText(file);
+        }
+    }
+    function readPrivateKeyContent() {
+        var input = document.getElementById('importPrivateKey'); // Lấy thẻ input file
+        var privateKeyContentElement = document.getElementById('privateKeyContent'); // Lấy thẻ textarea
+
+        // Kiểm tra nếu đã chọn file
+        if (input.files.length > 0) {
+            var file = input.files[0];
+            var reader = new FileReader();
+
+            // Đọc nội dung file thành công
+            reader.onload = function (e) {
+                var privateKeyContent = e.target.result;
+                privateKeyContentElement.value = privateKeyContent; // Gán nội dung file vào textarea
+            };
+
+            // Đọc file dưới dạng văn bản
+            reader.readAsText(file);
+        }
+    }
 </script>
 <script src="js/plugins.js"></script>
 <script src="js/ajax-mail.js"></script>
