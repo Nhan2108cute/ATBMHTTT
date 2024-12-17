@@ -215,7 +215,6 @@
                                                     <tbody>
                                                     <c:forEach var="bill" items="${sessionScope.userBills}" varStatus="ss">
                                                         <tr>
-                                                                <%--<td>${ss.index+1}</td>--%>
                                                             <td>${bill.id}</td>
                                                             <td>${bill.ten}</td>
                                                                 <%--<td>${bill.nguoidung}</td>--%>
@@ -223,6 +222,18 @@
                                                             <td>${bill.diachi}</td>
                                                             <td>${bill.tongTien} VNĐ</td>
                                                             <td>${bill.ghiChu}</td>
+                                                            <td>${""}</td>
+                                                            <td>${bill.hash} VNĐ</td>
+                                                            <td>
+                                                                <c:choose>
+                                                                    <c:when test="${empty bill.signature || bill.signature eq ''}">
+                                                                        <span class="text-danger">Chưa Ký</span>
+                                                                    </c:when>
+                                                                    <c:otherwise>
+                                                                        <span class="text-success">Đã Ký</span>
+                                                                    </c:otherwise>
+                                                                </c:choose>
+                                                            </td>
                                                             <c:set var="sessionValue" value="${sessionScope.error_id}"/>
                                                             <c:set var="compareValue" value="${bill.id}"/>
                                                             <c:if test="${sessionValue == compareValue}">
