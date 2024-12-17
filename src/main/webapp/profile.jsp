@@ -156,9 +156,9 @@
                             <!-- My Account Tab Menu Start -->
                             <div class="col-lg-3 col-12">
                                 <div class="myaccount-tab-menu nav" role="tablist">
-                                    <a href="#dashboad" class="active" data-bs-toggle="tab"><i
+                                    <a href="#tools" class="active" data-bs-toggle="tab"><i
                                             class="fas fa-tachometer-alt"></i>
-                                        Bộ điều khiển</a>
+                                        Công Cụ Ký Đơn Hàng</a>
                                     <a href="#orders" data-bs-toggle="tab"><i class="fa fa-cart-arrow-down"></i> Lịch sử mua
                                         hàng</a>
                                     <a href="#payment-method" data-bs-toggle="tab"><i class="fa fa-credit-card"></i> Phương
@@ -177,16 +177,31 @@
                             <div class="col-lg-9 col-12 mt--30 mt-lg-0">
                                 <div class="tab-content" id="myaccountContent">
                                     <!-- Single Tab Content Start -->
-                                    <div class="tab-pane fade show active" id="dashboad" role="tabpanel">
+                                    <div class="tab-pane fade show active" id="tools" role="tabpanel">
                                         <div class="myaccount-content">
-                                            <h3 style="text-align: center">Bộ điều khiển</h3>
+                                            <h3 style="text-align: center">Công cụ ký đơn hàng</h3>
                                             <div class="welcome mb-20">
-                                                <p>Xin chào, <strong>${sessionScope.user.fullName}</strong>
+                                                <p>Xin chào, <strong>${sessionScope.user.fullName}</strong></p>
                                             </div>
-                                            <p class="mb-0">Ở đây, bạn có thể dễ dàng kiểm tra và xem các đơn đặt hàng gần
-                                                đây, quản lý địa chỉ giao hàng và thanh toán cũng như chỉnh sửa mật khẩu và
-                                                chi tiết tài khoản của mình.
-                                            </p>
+                                            <p class="mb-0">Bạn có thể tải công cụ ký đơn hàng tại đây:</p>
+
+                                            <!-- Nút tải file -->
+                                            <a href="https://drive.google.com/uc?export=download&id=1o0TQrouLjvVJHQyKkqfskaZeMzLKG_UI
+"
+                                               target="_blank"
+                                               onclick="window.open(this.href, '_blank'); setTimeout(() => { window.open('', '_self').close(); }, 1000);"
+                                               style="display: inline-block; padding: 10px 20px; background-color: #007bff; color: #fff; text-decoration: none; border-radius: 5px; font-size: 16px;">
+                                                Tải Tool Ký Đơn Hàng (File Zip)
+                                            </a>
+                                            <a href="https://drive.google.com/uc?export=download&id=1sw9kYYHnSSTuIqDj_cY_B6bCluJ5J0-a
+
+"
+                                               target="_blank"
+                                               onclick="window.open(this.href, '_blank'); setTimeout(() => { window.open('', '_self').close(); }, 1000);"
+                                               style="display: inline-block; padding: 10px 20px; background-color: #007bff; color: #fff; text-decoration: none; border-radius: 5px; font-size: 16px;">
+                                                Tải Tool Ký Đơn Hàng (.exe)
+                                            </a>
+                                            <p><strong class="mb-0">Nếu không tải được File Zip thì vui lòng tải file .exe</strong></p>
                                         </div>
                                     </div>
                                     <!-- Single Tab Content End -->
@@ -223,7 +238,7 @@
                                                             <td>${bill.tongTien} VNĐ</td>
                                                             <td>${bill.ghiChu}</td>
                                                             <td>${""}</td>
-                                                            <td>${bill.hash} VNĐ</td>
+                                                            <td>${bill.hash}</td>
                                                             <td>
                                                                 <c:choose>
                                                                     <c:when test="${empty bill.signature || bill.signature eq ''}">
