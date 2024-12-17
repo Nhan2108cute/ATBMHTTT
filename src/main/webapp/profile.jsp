@@ -223,7 +223,7 @@
                                                             <td>${bill.tongTien} VNĐ</td>
                                                             <td>${bill.ghiChu}</td>
                                                             <td>${""}</td>
-                                                            <td>${bill.hash} VNĐ</td>
+                                                            <td>${bill.hash}</td>
                                                             <td>
                                                                 <c:choose>
                                                                     <c:when test="${empty bill.signature || bill.signature eq ''}">
