@@ -112,15 +112,10 @@ public class BillDAO {
     // Lấy danh sách hóa đơn của một người dùng
     public List<Bill> getBillDetails(String userId) {
         List<Bill> billList = new ArrayList<>();
-
         String query = "SELECT hd.id AS hoadon_id, hd.ten, hd.dia_chi_giao_hang, hd.ngaylap_hd, " +
-                "GROUP_CONCAT(CONCAT(sp.tensp, ' (', cthd.soluong, ')') SEPARATOR ', ') AS product_info, " +
-                "hd.tongtien, hd.ghichu, hd.hash " +
-                "FROM sanpham sp " +
-                "JOIN ct_hoadon cthd ON sp.id = cthd.id_sanpham " +
-                "JOIN hoadon hd ON hd.id = cthd.id_hoadon " +
-                "WHERE hd.id_ngdung = ? " +
-                "GROUP BY hd.id, hd.ngaylap_hd";
+                "hd.tongtien, hd.ghichu, hd.hash, hd.signature " + // Thêm hd.signature
+                "FROM hoadon hd " +
+                "WHERE hd.id_ngdung = ?";
 
         try (Connection conn = new DBConnect().getConnection();
              PreparedStatement ps = conn.prepareStatement(query)) {
@@ -136,15 +131,15 @@ public class BillDAO {
                     bill.setTongTien(rs.getDouble("tongtien"));
                     bill.setGhiChu(rs.getString("ghichu"));
                     bill.setHash(rs.getString("hash"));
+                    bill.setSignature(rs.getString("signature")); // Gán giá trị signature
 
-                    System.out.println("Hóa đơn lấy được: ID = " + bill.getId() + ", Hash = " + bill.getHash());
                     billList.add(bill);
                 }
             }
-
         } catch (Exception e) {
             e.printStackTrace();
         }
         return billList;
     }
+
 }
