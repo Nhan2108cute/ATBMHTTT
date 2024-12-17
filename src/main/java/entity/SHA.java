@@ -5,27 +5,29 @@ import java.io.FileInputStream;
 import java.math.BigInteger;
 import java.security.MessageDigest;
 
-
 public class SHA {
-    public static String SHA_1 = "SHA-1";
-    public static String SHA_224 = "SHA-224";
-    public static String SHA_256 = "SHA-256";
-    public static String SHA_384 = "SHA_384";
-    public static String SHA_512_224 = "SHA-512/224";
+    public static final String SHA_256 = "SHA-256";
 
-    public static String hash(String mess, String algorithms) {
+    // Phương thức băm chuỗi
+    public static String hash(String mess) {
         try {
-            MessageDigest md = MessageDigest.getInstance(algorithms);
-            byte[] messageDigest = md.digest(mess.getBytes());
-            BigInteger number = new  BigInteger(1,messageDigest);
-            String hashtext = number.toString(16);
-            return hashtext;
+            MessageDigest md = MessageDigest.getInstance(SHA_256); // Sử dụng SHA-256
+            byte[] messageDigest = md.digest(mess.getBytes("UTF-8"));
+            BigInteger number = new BigInteger(1, messageDigest);
+            StringBuilder hashText = new StringBuilder(number.toString(16));
+
+            // Bổ sung số 0 vào đầu chuỗi nếu cần
+            while (hashText.length() < 64) {
+                hashText.insert(0, "0");
+            }
+            return hashText.toString();
         } catch (Exception e) {
             e.printStackTrace();
         }
         return "";
-
     }
+
+    // Phương thức băm file
     public static String hashFile(File file, String algorithms) {
         try (FileInputStream fis = new FileInputStream(file)) {
             MessageDigest md = MessageDigest.getInstance(algorithms);
@@ -36,19 +38,26 @@ public class SHA {
             }
             byte[] messageDigest = md.digest();
             BigInteger number = new BigInteger(1, messageDigest);
-            return number.toString(16);
+            StringBuilder hashText = new StringBuilder(number.toString(16));
+
+            // Bổ sung số 0 vào đầu chuỗi nếu cần
+            while (hashText.length() < 64) {
+                hashText.insert(0, "0");
+            }
+            return hashText.toString();
         } catch (Exception e) {
             e.printStackTrace();
         }
         return "";
     }
 
+    // Chạy thử
     public static void main(String[] args) {
-        SHA sha = new SHA();
-        String valueTest = sha.hash("thanh", sha.SHA_1);
-        System.out.println(valueTest);
+        String valueTest = SHA.hash("thanh");
+        System.out.println("Hash của chuỗi: " + valueTest);
+
         File file = new File("C:\\Users\\DELL\\Documents\\qltt8.txt");
-        String fileHash = sha.hashFile(file, sha.SHA_1);
-        System.out.println("Hash of file: " + fileHash);
+        String fileHash = SHA.hashFile(file, SHA.SHA_256);
+        System.out.println("Hash của file: " + fileHash);
     }
 }
