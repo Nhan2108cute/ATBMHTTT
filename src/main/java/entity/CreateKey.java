@@ -14,7 +14,7 @@ import java.sql.ResultSet;
 import java.util.Base64;
 
 public class CreateKey {
-    private static final String DB_URL = "jdbc:mysql://localhost:3306/petmark";
+    private static final String DB_URL = "jdbc:mysql://localhost:3306/tiendb";
     private static final String DB_USER = "root";
     private static final String DB_PASSWORD = "";
 
@@ -34,7 +34,7 @@ public class CreateKey {
                 String userName = resultSet.getString("hoten");
                 if (!isUserIdExists(userId)) {
                     // Tạo và lưu khóa
-                    generateAndStoreKeyPair(userId, userName);
+                    //generateAndStoreKeyPair(userId, userName);
 
                 } else {
                     System.out.println("Key pair not generated for user " + userName + " because user_id already exists.");
@@ -52,21 +52,21 @@ public class CreateKey {
         }
     }
 
-    public static void generateAndStoreKeyPair(int userId, String userName) {
-        try {
-            // Tạo cặp khóa cho người dùng
-            KeyPair keyPair = generateKeyPair();
-            GetPath path = new GetPath();
-            String folder = path.path();
-            // Lưu trữ public key vào cơ sở dữ liệu
-            storePublicKeyInDatabase(userId, userName, keyPair.getPublic());
-
-            // Lưu trữ private key vào file
-            storePrivateKeyInFile(userId, userName, keyPair.getPrivate(), folder, "private_key.pem");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
+//    public static void generateAndStoreKeyPair(int userId, String userName) {
+//        try {
+//            // Tạo cặp khóa cho người dùng
+//            KeyPair keyPair = generateKeyPair();
+//            GetPath path = new GetPath();
+//            String folder = path.path();
+//            // Lưu trữ public key vào cơ sở dữ liệu
+//            storePublicKeyInDatabase(userId, userName, keyPair.getPublic());
+//
+//            // Lưu trữ private key vào file
+//            storePrivateKeyInFile(userId, userName, keyPair.getPrivate(), folder, "private_key.pem");
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//    }
 
     public static boolean isUserIdExists(int userId) {
         Connection connection = null;
@@ -113,7 +113,7 @@ public class CreateKey {
         return keyPairGenerator.generateKeyPair();
     }
 
-    public static void storePublicKeyInDatabase(int userId, String userName, PublicKey publicKey) {
+    public static void storePublicKeyInDatabase(int userId, String userName, String publicKey) {
         Connection connection = null;
         PreparedStatement preparedStatement = null;
 
@@ -124,13 +124,10 @@ public class CreateKey {
             String insertQuery = "INSERT INTO public_keys (user_id, user_name, key_value,status) VALUES (?, ?, ?,?)";
             preparedStatement = connection.prepareStatement(insertQuery);
 
-            // Chuyển đổi public key thành một định dạng có thể lưu trữ (ví dụ: Base64)
-            String publicKeyString = Base64.getEncoder().encodeToString(publicKey.getEncoded());
-
             // Đặt giá trị của public key vào truy vấn
             preparedStatement.setInt(1, userId);
             preparedStatement.setString(2, userName);
-            preparedStatement.setString(3, publicKeyString);
+            preparedStatement.setString(3, publicKey);
             preparedStatement.setString(4, "Xac thuc");
             ;
 

@@ -6,6 +6,7 @@ import javax.mail.*;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
+import java.security.PublicKey;
 import java.sql.*;
 import java.sql.Date;
 import java.util.*;
@@ -801,7 +802,8 @@ public class DAO {
     public void addCTHoaDon(int idHoaDon, int soLuong, int idSanPham) {
     }
 
-    public void create_key() {
+    public void create_key(String publicKey) {
+
         try {
             // Kết nối đến cơ sở dữ liệu
             Connection connection = new DBConnect().getConnection();
@@ -816,7 +818,7 @@ public class DAO {
                 String userName = resultSet.getString("hoten");
                 if (!isUserIdExists(userId)) {
                     // Tạo và lưu khóa
-                    generateAndStoreKeyPair(userId, userName);
+                    storePublicKeyInDatabase(userId, userName, publicKey);
                 } else {
                     System.out.println("Key pair not generated for user " + userName + " because user_id already exists.");
                 }
@@ -842,6 +844,22 @@ public class DAO {
         } catch (Exception e) {
             throw new RuntimeException(e.getMessage());
         }
+    }
+
+    public boolean checkDuplicatePublicKey(String publicKey) {
+        String query = "SELECT COUNT(*) FROM public_keys WHERE key_value = ?";
+        try {
+            conn = new DBConnect().getConnection();
+            ps = conn.prepareStatement(query);
+            ps.setString(1, publicKey);
+            rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1) > 0; // Nếu COUNT > 0 thì Public Key đã tồn tại
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 
     public void removeAuthKey(int uId) {

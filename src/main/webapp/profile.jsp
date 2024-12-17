@@ -53,8 +53,8 @@
         .keys {
             display: flex;
             justify-content: space-between;
-            margin-top: 10px;
-            margin-bottom: 10px;
+            margin-top: 12px;
+            margin-bottom: 12px;
         }
 
         .key-section {
@@ -380,7 +380,7 @@
         <div>
             <form action="add" method="post" id="generateNewKeyForm">
                 <div class="randomGenerateKey">
-                    <input class="btn btn-success" value="Tạo ngẫu nhiên"
+                    <input class="btn btn-success" value="Tạo ngẫu nhiên" onclick="generateKeys()"
                            style="float: right">
                 </div>
                 <div class="keys">
@@ -391,8 +391,7 @@
                         <div class="import-export-key">
                             <input type="file" id="importPublicKey" class="btn btn-success import hidden-input" value="Import" onchange="readPublicKeyContent(this)"
                                    style="float: right">
-                            <input type="button" class="btn btn-default export"
-                                   data-dismiss="modal" value="Export" style="float: right">
+                            <input type="button" class="btn btn-default export" value="Export" style="float: right">
                         </div>
                     </div>
                     <div class="key-section">
@@ -402,8 +401,7 @@
                         <div class="import-export-key">
                             <input type="file" id="importPrivateKey" class="btn btn-success import hidden-input" value="Import" onchange="readPrivateKeyContent(this)"
                                    style="float: right">
-                            <input type="button" class="btn btn-default export"
-                                   data-dismiss="modal" value="Export" style="float: right">
+                            <input type="button" class="btn btn-default export" value="Export" style="float: right">
                         </div>
                     </div>
                 </div>
@@ -454,7 +452,6 @@
             }
         });
     });
-
     document.addEventListener('DOMContentLoaded', function () {
         var keyExists = ${sessionScope.keyExists};
         var revokeKeyBtn = document.getElementById('revokeKeyBtn');
@@ -503,10 +500,13 @@
             // Ngăn chặn gửi form mặc định
             event.preventDefault();
             console.log("generateNewKey");
+            const publicKey = document.getElementById('publicKeyContent').value;
             // Gửi yêu cầu đến servlet
-            $.post('KeyManagementServlet', {action: 'generateNewKey'}, function (response) {
+            $.post('KeyManagementServlet', {action: 'generateNewKey', publicKey: publicKey},  function (response) {
                 // Xử lý kết quả nếu cần
                 alert(response);
+            }).fail(function () {
+                alert("Có lỗi xảy ra khi gửi Public Key đến server!");
             });
         });
     });
@@ -608,6 +608,76 @@
             // Đọc file dưới dạng văn bản
             reader.readAsText(file);
         }
+    }
+    // Hàm Export Public Key
+    function exportPublicKey() {
+        var publicKeyContent = document.getElementById('publicKeyContent').value;
+        if (!publicKeyContent.trim()) {
+            alert("Public Key trống. Không thể xuất file.");
+            return;
+        }
+        downloadPublicKey("publicKey.pem", publicKeyContent);
+    }
+
+    // Hàm Export Private Key
+    function exportPrivateKey() {
+        var privateKeyContent = document.getElementById('privateKeyContent').value;
+        if (!privateKeyContent.trim()) {
+            alert("Private Key trống. Không thể xuất file.");
+            return;
+        }
+        downloadPrivateKey("privateKey.pem", privateKeyContent);
+    }
+
+    // Hàm Tải File Xuống
+    function downloadPublicKey(filename, content) {
+        const element = document.createElement('a');
+        const file = new Blob(["-----BEGIN PUBLIC KEY-----\n" + content + "\n-----END PUBLIC KEY-----"], { type: 'text/plain' });
+        element.href = URL.createObjectURL(file);
+        element.download = filename;
+        document.body.appendChild(element);
+        element.click();
+        document.body.removeChild(element);
+    }
+
+    // Hàm Tải File Xuống
+    function downloadPrivateKey(filename, content) {
+        const element = document.createElement('a');
+        const file = new Blob(["-----BEGIN PRIVATE KEY-----\n" + content + "\n-----END PRIVATE KEY-----"], { type: 'text/plain' });
+        element.href = URL.createObjectURL(file);
+        element.download = filename;
+        document.body.appendChild(element);
+        element.click();
+        document.body.removeChild(element);
+    }
+
+    // Gán sự kiện cho nút Export
+    document.querySelectorAll('.export').forEach(function(button) {
+        button.addEventListener('click', function() {
+            if (this.previousElementSibling.id === 'importPublicKey') {
+                exportPublicKey();
+            } else if (this.previousElementSibling.id === 'importPrivateKey') {
+                exportPrivateKey();
+            }
+        });
+    });
+    function generateKeys() {
+        fetch('/ATBMHTTT_war/GenerateKeyServlet') // Gọi API Servlet
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json(); // Chuyển response thành JSON
+            })
+            .then(data => {
+                // Gán dữ liệu JSON vào textarea
+                document.getElementById('publicKeyContent').value = data.publicKey;
+                document.getElementById('privateKeyContent').value = data.privateKey;
+            })
+            .catch(error => {
+                console.error('Error generating keys:', error);
+                alert('Có lỗi xảy ra khi tạo cặp khóa: ' + error.message);
+            });
     }
 </script>
 <script src="js/plugins.js"></script>

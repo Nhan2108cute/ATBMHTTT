@@ -7,6 +7,7 @@ import javax.servlet.*;
 import javax.servlet.http.*;
 import javax.servlet.annotation.*;
 import java.io.IOException;
+import java.security.PublicKey;
 
 @WebServlet(name = "KeyManagementServlet", value = "/KeyManagementServlet")
 public class KeyManagementServlet extends HttpServlet {
@@ -17,8 +18,9 @@ public class KeyManagementServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-          response.setCharacterEncoding("UTF-8");
+        response.setCharacterEncoding("UTF-8");
         String action = request.getParameter("action");
+        String publicKey = request.getParameter("publicKey");
         HttpSession session = request.getSession();
         Object o = session.getAttribute("user");
         User user = (User) o;
@@ -36,8 +38,8 @@ public class KeyManagementServlet extends HttpServlet {
                 }
 
             } else if ("generateNewKey".equals(action)) {
-                if(!keyExists){
-                    dao.create_key();
+                if(!keyExists && publicKey != null && !publicKey.isEmpty()){
+                    dao.create_key(publicKey);
                     response.getWriter().write("Yêu cầu tạo key mới của bạn đã được xử lý");
                 } else {
                     response.getWriter().write("Yêu cầu tạo key mới của bạn không thành công");
