@@ -375,7 +375,7 @@
                                             <div action="#" method="post">
                                                 <div class="row justify-content-center mt-3">
                                                     <div class="col-12 col-md-6 text-center">
-                                                        <p class="text-danger">Khách hàng chưa có key, hãy nhấn tạo key
+                                                        <p class="text-danger">Nếu khách hàng chưa có key, hãy nhấn tạo key
                                                             mới</p>
                                                         <button id="genKeyBtn" class="btn btn-success">Tạo key mới
                                                         </button>
