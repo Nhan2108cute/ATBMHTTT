@@ -1,38 +1,57 @@
 package entity;
 
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 import java.util.TreeMap;
 
 public class Cart {
-    private ArrayList<Product> list;
-    private long cart_id;
+    private long cartId;
+    private String userId;
+    private Date createdDate;
+    private List<CartItem> items;
 
     public Cart() {
-      list = new ArrayList<>();
-      cart_id = System.currentTimeMillis();
+        this.items = new ArrayList<>();
+        this.cartId = System.currentTimeMillis();
+        this.createdDate = new Date();
     }
 
-    public Cart(ArrayList<Product> list, long cart_id) {
-        this.list = list;
-        this.cart_id = cart_id;
+    public double getTotalAmount() {
+        return items.stream()
+                .mapToDouble(item -> item.getPrice() * item.getQuantity())
+                .sum();
     }
 
-    public ArrayList<Product> getList() {
-        return list;
+    public long getCartId() {
+        return cartId;
     }
 
-    public void setList(ArrayList<Product> list) {
-        this.list = list;
+    public void setCartId(long cartId) {
+        this.cartId = cartId;
     }
 
-    public long getCart_id() {
-        return cart_id;
+    public String getUserId() {
+        return userId;
     }
 
-    public void setCart_id(long cart_id) {
-        this.cart_id = cart_id;
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 
-    //Them san pham vao gio hang
+    public Date getCreatedDate() {
+        return createdDate;
+    }
 
+    public void setCreatedDate(Date createdDate) {
+        this.createdDate = createdDate;
+    }
+
+    public List<CartItem> getItems() {
+        return items;
+    }
+
+    public void setItems(List<CartItem> items) {
+        this.items = items;
+    }
 }
