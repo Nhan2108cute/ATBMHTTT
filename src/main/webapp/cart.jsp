@@ -1,150 +1,219 @@
 <%@ page import="dao.CartDB_DAO" %>
 <%@ page import="entity.Cart" %>
-<%@ page import="entity.CartItem" %>
+<%@ page import="entity.Product" %>
+<%@ page import="entity.User" %>
+<%@ page import="dao.DAO" %>
 <%@ page import="java.util.List" %>
-<%@ page import="java.util.ArrayList" %>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<%
-	CartDB_DAO cartDBDAO = new CartDB_DAO();
-	String userId = (String) session.getAttribute("userId"); // Assuming userId is stored in session
-	Cart cart = userId != null ? cartDBDAO.getCartByUser(userId) : null;
-	List<CartItem> cartItems = cart != null ? cart.getItems() : new ArrayList<>();
-	int itemCount = cartItems.size();
-	double totalAmount = cartItems.stream().mapToDouble(item -> item.getPrice() * item.getQuantity()).sum();
-%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 
-<header class="header petmark-header-1">
-	<div class="header-wrapper">
-		<!-- Site Wrapper Starts -->
-		<div class="header-top bg-ash">
-			<div class="container">
-				<div class="row align-items-center">
-					<div class="col-sm-6 text-center text-sm-start">
-						<h6 class="font-weight-300">Chào mừng đến Petmark</h6>
-					</div>
-				</div>
-			</div>
-		</div>
-		<div class="header-middle">
-			<div class="container">
-				<div class="row align-items-center justify-content-center">
-					<!-- Template Logo -->
-					<div class="col-lg-3 col-md-12 col-sm-4">
-						<div class="site-brand text-center text-lg-start">
-							<a href="home" class="brand-image">
-								<img src="image/main-logo.png" alt="">
-							</a>
-						</div>
-					</div>
-					<!-- Category With Search -->
-					<div class="col-lg-5 col-md-7 order-3 order-md-2">
-						<form class="category-widget" action="search" method="get">
-							<input value="${txtS}" type="text" name="search" placeholder="Tìm kiếm sản phẩm">
-							<button class="search-submit" type="submit"><i class="fas fa-search"></i></button>
-						</form>
-					</div>
-					<!-- Call Login & Track of Order -->
-					<div class="col-lg-4 col-md-5 col-sm-8 order-2 order-md-3">
-						<div class="header-widget-2 text-center text-sm-end">
-							<div class="call-widget">
-								<p>Liên hệ: <i class="icon ion-ios-telephone"></i><span class="font-weight-mid">+84-012 345 678</span></p>
-							</div>
-							<ul class="header-links">
-								<c:if test="${sessionScope.user == null}">
-									<li><a href="login.jsp"><i class="fas fa-user"></i> Đăng nhập hoặc đăng ký</a></li>
-								</c:if>
-								<c:if test="${sessionScope.user != null}">
-									<li>
-										<a href="profile"><i class="fas fa-user"></i> ${sessionScope.user.fullName}</a>
-									</li>
-									<li>
-										<a href="logout"><i class="fas fa-sign-out-alt"></i> Logout</a>
-									</li>
-								</c:if>
-							</ul>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
-	<div class="header-nav-wrapper">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+	<link rel="stylesheet" href="css/plugins.css" />
+	<link rel="stylesheet" href="css/main.css" />
+	<link rel="shortcut icon" type="image/x-icon" href="image/favicon.ico">
+	<title>Giỏ hàng - Petmark ❤️</title>
+
+	<!-- Add AJAX functionality -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+</head>
+<body>
+<div class="site-wrapper">
+	<jsp:include page="header/header.jsp"></jsp:include>
+
+	<nav aria-label="breadcrumb" class="breadcrumb-wrapper">
 		<div class="container">
-			<div class="header-bottom-inner">
-				<div class="row g-0">
-					<!-- Main Menu -->
-					<div class="col-lg-7 d-none d-lg-block">
-						<nav class="main-navigation l-widget">
-							<!-- Mainmenu Start -->
-							<ul class="mainmenu">
-								<li class="mainmenu__item"><a href="home" class="mainmenu__link">Trang chủ</a></li>
-								<li class="mainmenu__item"><a href="list-product" class="mainmenu__link">Sản phẩm</a></li>
-								<li class="mainmenu__item"><a href="FAQ" class="mainmenu__link">Giải đáp</a></li>
-								<li class="mainmenu__item"><a href="contact" class="mainmenu__link">Liên hệ</a></li>
-								<li class="mainmenu__item"><a href="cart.jsp" class="mainmenu__link">Giỏ hàng</a></li>
-								<li class="mainmenu__item"><a href="blog" class="mainmenu__link">Tin tức</a></li>
-								<c:if test="${sessionScope.user.admin == 2}">
-									<li class="mainmenu__item"><a href="admin-home" class="mainmenu__link" target="_blank">Trang Admin</a></li>
-								</c:if>
-							</ul>
-							<!-- Mainmenu End -->
-						</nav>
-					</div>
-					<!-- Cart block -->
-					<c:if test="${sessionScope.user != null}">
-						<div class="col-lg-2 col-6 offset-6 offset-md-0 col-md-3 order-3" style="margin-left: 25%">
-							<div class="cart-widget-wrapper slide-down-wrapper">
-								<div class="cart-widget slide-down--btn">
-									<div class="cart-icon">
-										<i class="ion-bag"></i>
-										<span class="cart-count-badge"><%=itemCount%></span>
-									</div>
-									<div class="cart-text">
-										<strong><span class="amount"><span class="currencySymbol"><%=totalAmount%></span></span></strong>
-									</div>
-								</div>
-								<div class="slide-down--item">
-									<div class="cart-widget-box">
-										<ul class="cart-items">
-											<% for (CartItem item : cartItems) { %>
-											<li class="single-cart">
-												<div class="cart-product">
-													<div class="cart-product-img">
-														<img src="<%=item.getProduct().getImage()%>" alt="Product">
-													</div>
-													<div class="product-details">
-														<h4 class="product-details--title"><%=item.getProduct().getName()%></h4>
-														<span class="product-details--price"><%=item.getQuantity()%> x <%=item.getPrice()%></span>
-													</div>
-													<a href="DelectProduct?id=<%=item.getProductId()%>"><img src="image/icon-logo/tr.jpg" class="far fa-trash-alt" style="width: 30%;height: 52%;margin-left: 65%;margin-top: 5px;"></a>
-												</div>
-											</li>
-											<% } %>
-											<li class="single-cart">
-												<div class="cart-product__subtotal">
-													<span class="subtotal--title">Tổng phụ</span>
-													<span class="subtotal--price"><%=totalAmount%></span>
-												</div>
-											</li>
-											<li class="single-cart">
-												<div class="cart-buttons">
-													<a href="cart.jsp" class="btn btn-outlined">Xem Giỏ</a>
-													<a href="checkout.jsp" class="btn btn-outlined">Thanh toán</a>
-												</div>
-											</li>
-										</ul>
-									</div>
-								</div>
-							</div>
-						</div>
-					</c:if>
-					<!-- Mobile Menu -->
-					<div class="col-12 d-flex d-lg-none order-2 mobile-absolute-menu">
-						<div class="mobile-menu"></div>
+			<ol class="breadcrumb">
+				<li class="breadcrumb-item"><a href="index.jsp">Trang chủ</a></li>
+				<li class="breadcrumb-item active" aria-current="page">Giỏ hàng</li>
+			</ol>
+		</div>
+	</nav>
+
+	<!-- Cart Page Start -->
+	<div class="cart_area cart-area-padding sp-inner-page--top">
+		<div class="container">
+			<div class="page-section-title">
+				<h1>Giỏ Hàng</h1>
+			</div>
+
+			<%
+				User currentUser = (User) session.getAttribute("user");
+				if (currentUser == null) {
+			%>
+			<div class="alert alert-warning">
+				Vui lòng <a href="login.jsp">đăng nhập</a> để xem giỏ hàng của bạn.
+			</div>
+			<%
+			} else {
+				CartDB_DAO cartDAO = new CartDB_DAO();
+				List<Cart> cartItems = cartDAO.getCartByUserId(Integer.parseInt(currentUser.getId()));
+				double cartTotal = cartDAO.getCartTotal(Integer.parseInt(currentUser.getId()));
+				request.setAttribute("cartItems", cartItems);
+				request.setAttribute("cartTotal", cartTotal);
+			%>
+
+			<div class="row">
+				<div class="col-12">
+					<div class="cart-table table-responsive mb--40">
+						<table class="table">
+							<thead>
+							<tr>
+								<th class="pro-remove"></th>
+								<th class="pro-thumbnail">Hình Ảnh</th>
+								<th class="pro-title">Tên Sản Phẩm</th>
+								<th class="pro-price">Giá</th>
+								<th class="pro-quantity">Số Lượng</th>
+								<th class="pro-subtotal">Tổng Tiền</th>
+							</tr>
+							</thead>
+							<tbody>
+							<c:forEach items="${cartItems}" var="item">
+								<tr>
+									<td class="pro-remove">
+										<a href="cart-remove?id=${item.product.id}"
+										   class="remove-item">
+											<i class="far fa-trash-alt"></i>
+										</a>
+									</td>
+									<td class="pro-thumbnail">
+										<img src="${item.product.image}"
+											 alt="${item.product.name}" />
+									</td>
+									<td class="pro-title">
+										<a href="product-details?id=${item.product.id}">
+												${item.product.name}
+										</a>
+									</td>
+									<td class="pro-price">
+                                                <span>
+                                                    <fmt:formatNumber value="${item.price}"
+																	  type="currency"
+																	  currencySymbol="₫"/>
+                                                </span>
+									</td>
+									<td class="pro-quantity">
+										<div class="pro-qty">
+											<div class="count-input-block">
+												<input type="number"
+													   class="form-control text-center quantity-input"
+													   value="${item.quantity}"
+													   min="1"
+													   data-product-id="${item.product.id}">
+											</div>
+										</div>
+									</td>
+									<td class="pro-subtotal">
+                                                <span>
+                                                    <fmt:formatNumber value="${item.totalPrice}"
+																	  type="currency"
+																	  currencySymbol="₫"/>
+                                                </span>
+									</td>
+								</tr>
+							</c:forEach>
+							</tbody>
+						</table>
 					</div>
 				</div>
 			</div>
+
+			<!-- Cart Summary -->
+			<div class="row">
+				<div class="col-lg-6">
+					<div class="cart-summary">
+						<div class="cart-summary-wrap">
+							<h4><span>Tóm Tắt Đơn Hàng</span></h4>
+							<p>Tổng tiền hàng
+								<span>
+                                        <fmt:formatNumber value="${cartTotal}"
+														  type="currency"
+														  currencySymbol="₫"/>
+                                    </span>
+							</p>
+							<p>Phí vận chuyển
+								<span>
+                                        <fmt:formatNumber value="${cartTotal > 0 ? 35000 : 0}"
+														  type="currency"
+														  currencySymbol="₫"/>
+                                    </span>
+							</p>
+							<h2>Tổng thanh toán
+								<span>
+                                        <fmt:formatNumber value="${cartTotal + (cartTotal > 0 ? 35000 : 0)}"
+														  type="currency"
+														  currencySymbol="₫"/>
+                                    </span>
+							</h2>
+						</div>
+						<div class="cart-summary-button">
+							<a href="checkout.jsp" class="checkout-btn c-btn btn--primary">
+								Thanh toán
+							</a>
+							<button class="update-btn c-btn btn--secondary">
+								Cập nhật giỏ hàng
+							</button>
+						</div>
+					</div>
+				</div>
+			</div>
+			<% } %>
 		</div>
 	</div>
-</header>
+	<!-- Cart Page End -->
+
+	<jsp:include page="footer/footer.jsp"></jsp:include>
+</div>
+
+<!-- Add JavaScript for cart functionality -->
+<script>
+	$(document).ready(function() {
+		// Handle quantity changes
+		$('.quantity-input').change(function() {
+			const productId = $(this).data('product-id');
+			const quantity = $(this).val();
+
+			$.ajax({
+				url: 'cart-update',
+				method: 'POST',
+				data: {
+					productId: productId,
+					quantity: quantity
+				},
+				success: function(response) {
+					if (response.success) {
+						location.reload(); // Refresh to show updated totals
+					} else {
+						alert(response.message || 'Cập nhật thất bại');
+					}
+				},
+				error: function() {
+					alert('Đã xảy ra lỗi khi cập nhật giỏ hàng');
+				}
+			});
+		});
+
+		// Handle remove item
+		$('.remove-item').click(function(e) {
+			if (!confirm('Bạn có chắc muốn xóa sản phẩm này khỏi giỏ hàng?')) {
+				e.preventDefault();
+			}
+		});
+
+		// Update cart button
+		$('.update-btn').click(function() {
+			location.reload();
+		});
+	});
+</script>
+
+<!-- Include your existing scripts -->
+<script src="js/plugins.js"></script>
+<script src="js/custom.js"></script>
+</body>
+</html>

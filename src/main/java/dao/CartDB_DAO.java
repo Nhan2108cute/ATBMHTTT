@@ -182,8 +182,6 @@ public class CartDB_DAO {
         } catch (Exception e) {
             e.printStackTrace();
             return false;
-        } finally {
-            closeResources();
         }
     }
 
@@ -201,8 +199,6 @@ public class CartDB_DAO {
         } catch (Exception e) {
             e.printStackTrace();
             return false;
-        } finally {
-            closeResources();
         }
     }
 
@@ -220,8 +216,6 @@ public class CartDB_DAO {
             }
         } catch (Exception e) {
             e.printStackTrace();
-        } finally {
-            closeResources();
         }
         return total;
     }
