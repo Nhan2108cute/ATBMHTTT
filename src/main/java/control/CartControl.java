@@ -1,8 +1,9 @@
 package control;
 
-import dao.CartDAO;
-import dao.DAO;
+import dao.CartDB_DAO;
+import entity.Product;
 import entity.User;
+import entity.Cart;
 
 import javax.servlet.*;
 import javax.servlet.http.*;
@@ -11,35 +12,55 @@ import java.io.IOException;
 
 @WebServlet(name = "CartControl", value = "/cart")
 public class CartControl extends HttpServlet {
-    private final long serialVersionUID =1L;
-
-    public CartControl() {
-        super();
-    }
+    private final CartDB_DAO cartDAO = new CartDB_DAO();
 
     @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-
-        String p_id = request.getParameter("id");
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        String productIdParam = request.getParameter("id");
         HttpSession session = request.getSession();
         User user = (User) session.getAttribute("user");
-        if(user!=null){
+
+        if (user != null && productIdParam != null) {
             try {
-                new CartDAO().addProductToCart(p_id);
+                int productId = Integer.parseInt(productIdParam);
 
+                // Lấy thông tin sản phẩm từ database
+                Product product = cartDAO.getProductById(productId);
+                if (product == null) {
+                    response.sendRedirect("error.jsp?error=product_not_found");
+                    return;
+                }
 
+                // Tính giá sản phẩm
+                double price = product.getPrice();
+
+                // Tạo đối tượng CartItem với đầy đủ thông tin
+                Cart cartItem = new Cart();
+                cartItem.setUserId(Integer.parseInt(user.getId()));
+                cartItem.setProductId(productId);
+                cartItem.setQuantity(1); // Mặc định số lượng là 1
+                cartItem.setPrice(price); // Set giá sản phẩm
+
+                // Thêm sản phẩm vào giỏ hàng
+                boolean success = cartDAO.addToCart(cartItem);
+
+                if (success) {
+                    // Fetch updated cart và lưu vào session
+                    session.setAttribute("cart", cartDAO.getCartByUserId(Integer.parseInt(user.getId())));
+                }
+
+                response.sendRedirect("home");
+            } catch (NumberFormatException e) {
+                e.printStackTrace();
+                response.sendRedirect("error.jsp?error=invalid_product_id");
             } catch (Exception e) {
-
+                e.printStackTrace();
+                response.sendRedirect("error.jsp");
             }
-            request.getRequestDispatcher("list-product").forward(request, response);
+        } else {
+            response.sendRedirect("login.jsp");
         }
-
-        else {
-            new CartDAO().delectAllProductToCart();
-            request.getRequestDispatcher("login.jsp").forward(request, response);
-
-        }
-
     }
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {

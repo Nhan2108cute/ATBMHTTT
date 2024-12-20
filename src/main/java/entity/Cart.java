@@ -1,57 +1,122 @@
 package entity;
 
-import java.util.ArrayList;
+import java.io.Serializable;
 import java.util.Date;
-import java.util.List;
-import java.util.TreeMap;
 
-public class Cart {
-    private long cartId;
-    private String userId;
-    private Date createdDate;
-    private List<CartItem> items;
+public class Cart implements Serializable {
+    private int id;
+    private int userId;
+    private int productId;
+    private int quantity;
+    private double price;
+    private Date createdAt;
+    private Product product;
 
+    // Default constructor
     public Cart() {
-        this.items = new ArrayList<>();
-        this.cartId = System.currentTimeMillis();
-        this.createdDate = new Date();
     }
 
-    public double getTotalAmount() {
-        return items.stream()
-                .mapToDouble(item -> item.getPrice() * item.getQuantity())
-                .sum();
+    // Constructor with all fields
+    public Cart(int id, int userId, int productId, int quantity, double price, Date createdAt) {
+        this.id = id;
+        this.userId = userId;
+        this.productId = productId;
+        this.quantity = quantity;
+        this.price = price;
+        this.createdAt = createdAt;
     }
 
-    public long getCartId() {
-        return cartId;
+    // Constructor with product
+    public Cart(int id, int userId, Product product, int quantity, double price, Date createdAt) {
+        this.id = id;
+        this.userId = userId;
+        this.product = product;
+        this.productId = Integer.parseInt(product.getId());
+        this.quantity = quantity;
+        this.price = price;
+        this.createdAt = createdAt;
     }
 
-    public void setCartId(long cartId) {
-        this.cartId = cartId;
+    // Getters and Setters
+    public int getId() {
+        return id;
     }
 
-    public String getUserId() {
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public int getUserId() {
         return userId;
     }
 
-    public void setUserId(String userId) {
+    public void setUserId(int userId) {
         this.userId = userId;
     }
 
-    public Date getCreatedDate() {
-        return createdDate;
+    public int getProductId() {
+        return productId;
     }
 
-    public void setCreatedDate(Date createdDate) {
-        this.createdDate = createdDate;
+    public void setProductId(int productId) {
+        this.productId = productId;
     }
 
-    public List<CartItem> getItems() {
-        return items;
+    public int getQuantity() {
+        return quantity;
     }
 
-    public void setItems(List<CartItem> items) {
-        this.items = items;
+    public void setQuantity(int quantity) {
+        this.quantity = quantity;
+    }
+
+    public double getPrice() {
+        return price;
+    }
+
+    public void setPrice(double price) {
+        this.price = price;
+    }
+
+    public Date getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(Date createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public Product getProduct() {
+        return product;
+    }
+
+    public void setProduct(Product product) {
+        this.product = product;
+        if (product != null) {
+            this.productId = Integer.parseInt(product.getId());
+        }
+    }
+
+    // Calculate total price for this cart item
+    public double getTotalPrice() {
+        if (product != null) {
+            // Use discounted price if available, otherwise use original price
+            double unitPrice = product.getPriceDis() > 0 ? product.getPriceDis() : product.getPrice();
+            return unitPrice * quantity;
+        }
+        return price * quantity;
+    }
+
+    @Override
+    public String toString() {
+        return "Cart{" +
+                "id=" + id +
+                ", userId=" + userId +
+                ", productId=" + productId +
+                ", quantity=" + quantity +
+                ", price=" + price +
+                ", createdAt=" + createdAt +
+                ", product=" + (product != null ? product.getName() : "null") +
+                '}';
     }
 }

@@ -11,15 +11,6 @@ public class CartItem {
     public CartItem() {
     }
 
-    public CartItem(long id, long cartId, String productId, int quantity, double price, Product product) {
-        this.id = id;
-        this.cartId = cartId;
-        this.productId = productId;
-        this.quantity = quantity;
-        this.price = price;
-        this.product = product;
-    }
-
     public long getId() {
         return id;
     }
