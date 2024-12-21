@@ -1,5 +1,6 @@
 package control;
 
+import dao.CreateKeyDAO;
 import dao.DAO;
 import entity.User;
 
@@ -25,7 +26,7 @@ public class KeyManagementServlet extends HttpServlet {
         Object o = session.getAttribute("user");
         User user = (User) o;
         int uId = Integer.parseInt(user.getId());
-        DAO dao = new DAO();
+        CreateKeyDAO dao = new CreateKeyDAO();
         boolean keyExists = dao.checkKey(uId);
         session.setAttribute("keyExists", keyExists);
         if (user != null) {
@@ -39,7 +40,7 @@ public class KeyManagementServlet extends HttpServlet {
 
             } else if ("generateNewKey".equals(action)) {
                 if(!keyExists && publicKey != null && !publicKey.isEmpty()){
-                    dao.create_key(publicKey);
+                    dao.create_key(publicKey,uId);
                     response.getWriter().write("Yêu cầu tạo key mới của bạn đã được xử lý");
                 } else {
                     response.getWriter().write("Yêu cầu tạo key mới của bạn không thành công");
