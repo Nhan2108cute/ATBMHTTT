@@ -5,6 +5,7 @@ import context.DBConnect;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.Timestamp;
 
 import static entity.CreateKey.isUserIdExists;
 import static entity.CreateKey.storePublicKeyInDatabase;
@@ -14,7 +15,12 @@ public class CreateKeyDAO {
     PreparedStatement ps;
     ResultSet rs;
 
+    // tạo key
     public void create_key(String publicKey, int specificUserId) {
+        create_key(publicKey, specificUserId, new Timestamp(System.currentTimeMillis()));
+    }
+
+    public void create_key(String publicKey, int specificUserId, Timestamp createTime) {
         try {
             // Kiểm tra xem public key đã tồn tại hay chưa
             if (checkDuplicatePublicKey(publicKey)) {
@@ -37,8 +43,8 @@ public class CreateKeyDAO {
 
                 // Kiểm tra xem người dùng đã có khóa đang hoạt động chưa
                 if (!checkKey(userId)) {
-                    // Lưu trữ public key cho người dùng cụ thể này
-                    storePublicKeyInDatabase(userId, userName, publicKey);
+                    // Lưu trữ public key cho người dùng cụ thể này với thời gian tạo được chỉ định
+                    storePublicKeyInDatabase(userId, userName, publicKey, createTime);
                     System.out.println("Storing public key cho User ID: " + userId + ", Name: " + userName);
                 } else {
                     System.out.println("Người dùng " + userName + " đã có khóa đang hoạt động.");
@@ -54,21 +60,23 @@ public class CreateKeyDAO {
         }
     }
 
-    private void storePublicKeyInDatabase(int userId, String userName, String publicKey) {
+    private void storePublicKeyInDatabase(int userId, String userName, String publicKey, Timestamp createTime) {
         Connection connection = null;
         PreparedStatement preparedStatement = null;
 
         try {
             connection = new DBConnect().getConnection();
 
-            // Câu lệnh chèn dữ liệu với user_id cụ thể
-            String insertQuery = "INSERT INTO public_keys (user_id, user_name, key_value, status) VALUES (?, ?, ?, ?)";
+            // Câu lệnh chèn dữ liệu với thời gian tạo được chỉ định
+            String insertQuery = "INSERT INTO public_keys (user_id, user_name, key_value, status, created_at, end_at) " +
+                    "VALUES (?, ?, ?, ?, ?, NULL)";
             preparedStatement = connection.prepareStatement(insertQuery);
 
             preparedStatement.setInt(1, userId);
             preparedStatement.setString(2, userName);
             preparedStatement.setString(3, publicKey);
             preparedStatement.setString(4, "Xac thuc");
+            preparedStatement.setTimestamp(5, createTime);
 
             preparedStatement.executeUpdate();
             System.out.println("Public key đã được lưu cho người dùng " + userName + " (ID: " + userId + ")");
@@ -125,7 +133,36 @@ public class CreateKeyDAO {
             throw new RuntimeException(e.getMessage());
         }
     }
+    // báo key mất
+    public Timestamp reportLostKey(int userId) {
+        Connection connection = null;
+        PreparedStatement ps = null;
+        Timestamp lostTime = new Timestamp(System.currentTimeMillis());
 
+        try {
+            connection = new DBConnect().getConnection();
+
+            // Cập nhật thời gian kết thúc (end_at) cho key hiện tại thành thời điểm báo mất
+            String updateCurrentKey = "UPDATE public_keys SET end_at = ?, status = 'Mat' " +
+                    "WHERE user_id = ? AND status = 'Xac thuc' AND end_at IS NULL";
+            ps = connection.prepareStatement(updateCurrentKey);
+            ps.setTimestamp(1, lostTime);
+            ps.setInt(2, userId);
+            ps.executeUpdate();
+
+            return lostTime;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        } finally {
+            try {
+                if (ps != null) ps.close();
+                if (connection != null) connection.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
     public void checkExpiredKey(int uId) {
         try {
             conn = new DBConnect().getConnection();

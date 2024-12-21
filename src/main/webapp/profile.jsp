@@ -373,6 +373,20 @@
 
                                         <hr class="my-4">
 
+                                        <!-- Form báo mất key -->
+                                        <form action="#" method="post" id="reportLostKeyForm">
+                                            <div class="row justify-content-center mt-3">
+                                                <div class="col-12 col-md-6 text-center">
+                                                    <p class="text-danger">Báo cáo private key bị lộ</p>
+                                                    <button id="reportLostKeyBtn" class="btn btn-warning" type="submit">
+                                                        Báo mất key
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </form>
+
+                                        <hr class="my-4">
+
                                         <!-- Form tạo key mới -->
                                         <div action="#" method="post">
                                             <div class="row justify-content-center mt-3">
@@ -506,6 +520,8 @@
         }
     });
 
+
+
     $(document).ready(function () {
         // Bắt sự kiện khi nhấn vào nút "Yêu cầu đưa key về trạng thái không chấp nhận mới"
         $('#revokeKeyForm').submit(function (event) {
@@ -522,6 +538,44 @@
                     // Xử lý kết quả nếu cầu
                     alert(response);
                 });
+            }
+        });
+
+        $('#reportLostKeyForm').submit(function (event) {
+            event.preventDefault();
+
+            var confirmResult = confirm("Bạn có chắc chắn muốn báo mất private key không?");
+
+            if (confirmResult) {
+                $.post('KeyManagementServlet', {
+                    action: 'reportLostKey'
+                }, function (response) {
+                    alert(response);
+                    // Refresh trang sau khi xử lý thành công để cập nhật trạng thái các nút
+                    location.reload();
+                }).fail(function(xhr, status, error) {
+                    alert('Có lỗi xảy ra khi báo mất key: ' + error);
+                });
+            }
+        });
+
+        // Kiểm tra điều kiện và tắt/bật button
+        document.addEventListener('DOMContentLoaded', function () {
+            var keyExists = ${sessionScope.keyExists};
+
+            // Quản lý trạng thái các nút
+            var reportLostKeyBtn = document.getElementById('reportLostKeyBtn');
+            var revokeKeyBtn = document.getElementById('revokeKeyBtn');
+            var genKeyBtn = document.getElementById('genKeyBtn');
+
+            if (keyExists) {
+                reportLostKeyBtn.disabled = false;
+                revokeKeyBtn.disabled = false;
+                genKeyBtn.disabled = true;
+            } else {
+                reportLostKeyBtn.disabled = true;
+                revokeKeyBtn.disabled = true;
+                genKeyBtn.disabled = false;
             }
         });
 
