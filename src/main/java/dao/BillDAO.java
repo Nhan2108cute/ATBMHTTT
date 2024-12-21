@@ -26,6 +26,7 @@ public class BillDAO {
             conn = new DBConnect().getConnection();
             ps = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
 
+
             ps.setTimestamp(1, bill.getNgayLap_hoaDon());
             ps.setString(2, bill.getNguoiDung().getId());
             ps.setString(3, bill.getTen());

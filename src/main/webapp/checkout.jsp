@@ -5,7 +5,10 @@
 <%@ page import="dao.BillDAO" %>
 <%@ page import="entity.Bill" %>
 <%@ page import="entity.User" %>
+<%@ page import="dao.CartDB_DAO" %>
+<%@ page import="entity.Cart" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <!DOCTYPE html>
 <html lang="en">
@@ -90,27 +93,62 @@
 
                                                 <h4>Sản Phẩm <span>Tổng giá</span></h4>
                                                 <ul>
-                                                    <%
-                                                        DAO dao = new DAO();
+                                                        <%
+                                                    User currentUser = (User) session.getAttribute("user");
+                                                    if (currentUser != null) {
+                                                        CartDB_DAO cartDAO = new CartDB_DAO();
+                                                        List<Cart> cartItems = cartDAO.getCartByUserId(Integer.parseInt(currentUser.getId()));
+                                                        double cartTotal = cartDAO.getCartTotal(Integer.parseInt(currentUser.getId()));
+                                                        request.setAttribute("cartItems", cartItems);
+                                                        request.setAttribute("cartTotal", cartTotal);
+                                                %>
 
-                                                        List<Product> list = CartDAO.getGiohang();
-                                                        int count = 1;
-                                                        int total =0;
-                                                        for(Product p: list){
-                                                            total +=p.getPrice();
-                                                    %>
-                                                    <li><span class="left"><%=p.getName()%> X 01</span> <span class="right"><%=p.getPrice()%></span></li>
-                                                    <%}%>
-                                                </ul>
-                                                <p> Tổng tiền <span><%=total%>VND</span></p>
-                                                <p>Phí vận chuyển <span><%int total1 =0;if(total>0){total1 = 35000;}else {total1 =0;}%><%= total1%> VND</span></p>
-                                                <h4>Tổng cộng <span><%= total +total1%></span></h4>
+                                                    <ul>
+                                                        <c:forEach items="${cartItems}" var="item">
+                                                            <li>
+                                                            <span class="left">
+                                                                ${item.product.name} X ${item.quantity}
+                                                            </span>
+                                                                <span class="right">
+                                                                <fmt:formatNumber value="${item.totalPrice}"
+                                                                                  type="currency"
+                                                                                  currencySymbol="₫"/>
+                                                            </span>
+                                                            </li>
+                                                        </c:forEach>
+                                                    </ul>
 
-                                                <div class="term-block">
-                                                    <input type="checkbox" id="accept_terms2">
-                                                    <label for="accept_terms2">Tôi đã đọc và chấp nhận các điều khoản & điều kiện</label>
-                                                </div>
-                                                <button class="place-order w-100">Đặt hàng</button>
+                                                    <p>Tổng tiền
+                                                        <span>
+                                                        <fmt:formatNumber value="${cartTotal}"
+                                                                          type="currency"
+                                                                          currencySymbol="₫"/>
+                                                    </span>
+                                                    </p>
+                                                    <p>Phí vận chuyển
+                                                        <span>
+                                                        <fmt:formatNumber value="${cartTotal > 0 ? 35000 : 0}"
+                                                                          type="currency"
+                                                                          currencySymbol="₫"/>
+                                                    </span>
+                                                    </p>
+                                                    <h4>Tổng cộng
+                                                        <span>
+                                                        <fmt:formatNumber value="${cartTotal + (cartTotal > 0 ? 35000 : 0)}"
+                                                                          type="currency"
+                                                                          currencySymbol="₫"/>
+                                                    </span>
+                                                    </h4>
+
+                                                        <% } %>
+
+                                                    <div class="term-block">
+                                                        <input type="checkbox" id="accept_terms2" required>
+                                                        <label for="accept_terms2">
+                                                            Tôi đã đọc và chấp nhận các điều khoản & điều kiện
+                                                        </label>
+                                                    </div>
+                                                    <button type="submit" class="place-order w-100">Đặt hàng</button>
                                             </div>
 
                                         </div>

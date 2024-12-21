@@ -78,6 +78,22 @@ CREATE TABLE `ct_hoadon`  (
                               CONSTRAINT `id_sanpham` FOREIGN KEY (`id_sanpham`) REFERENCES `sanpham` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT
 ) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8 COLLATE = utf8_unicode_ci ROW_FORMAT = Dynamic;
 
+
+DROP TABLE IF EXISTS `cart`;
+CREATE TABLE `cart` (
+                        `id` int NOT NULL AUTO_INCREMENT,
+                        `user_id` int NOT NULL,
+                        `product_id` int NOT NULL,
+                        `quantity` int NOT NULL DEFAULT 1,
+                        `price` double NOT NULL,
+                        `created_at` timestamp DEFAULT CURRENT_TIMESTAMP,
+                        PRIMARY KEY (`id`),
+                        UNIQUE (`user_id`, `product_id`),
+                        FOREIGN KEY (`user_id`) REFERENCES `nguoidung` (`id`),
+                        FOREIGN KEY (`product_id`) REFERENCES `sanpham` (`id`),
+                        CHECK (`quantity` > 0)
+) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_unicode_ci;
+
 -- ----------------------------
 -- Records of ct_hoadon
 -- ----------------------------
