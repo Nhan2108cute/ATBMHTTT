@@ -16,7 +16,8 @@
     <link rel="stylesheet" href="css/plugins.css"/>
     <link rel="stylesheet" href="css/main.css"/>
     <link rel="shortcut icon" type="image/x-icon" href="image/favicon.ico">
-    <title>Petmark ❤️</title>
+    <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;700&display=swap" rel="stylesheet">
+    <title>QNC Money</title>
     <style>
         .popup-overlay {
             position: fixed;
@@ -103,8 +104,8 @@
                             <div class="container">
                                 <div class="row">
                                     <div class="col-lg-10">
-                                        <h2><span class="text-primary">Petmark</span> cửa hàng <br> thuốc thú y</h2>
-                                        <h4 class="mt--30">Lựa chọn tốt nhất cho thú cưng của bạn</h4>
+                                        <h2><span class="text-primary">QCN Money</span> cửa hàng <br> tiền sưu tầm</h2>
+                                        <h4 class="mt--30">Lựa chọn tốt nhất dành cho người dùng thích sưu tầm tiền</h4>
                                         <div class="slider-btn mt--30">
                                             <a href="list-product" class="btn btn-outlined--white btn-rounded">
                                                 Mua ngay</a>
@@ -119,7 +120,7 @@
                             <div class="container">
                                 <div class="row">
                                     <div class="col-lg-10">
-                                        <h4>Cửa hàng thú y</h4>
+                                        <h4>Cửa hàng tiền sưu tầm</h4>
                                         <h2 class="mt--20">Đến với <br> chúng tôi</h2>
                                         <div class="slider-btn mt--30">
                                             <a href="list-product" class="btn btn-outlined--white btn-rounded">Mua ngay
@@ -198,7 +199,7 @@
                 <div class="col-lg-8 col-xl-9">
                     <div class="slider-header-block tab-header d-flex border-bottom mb--20">
                         <div class="block-title-2 mb-0 border-0">
-                            <h2>Thuốc Thú Y</h2>
+                            <h2>Tiền Kỉ Niệm</h2>
                         </div>
                         <ul class="pm-tab-nav tab-nav-style-2 nav nav-tabs" id="myTab" role="tablist">
                             <li class="nav-item">
@@ -281,7 +282,7 @@
                                         <h3><a href="detail?pID=${t.id}"> ${t.name} </a></h3>
                                         <div class="price text-orange">
 
-                                            <span>500 VND</span>
+                                            <span>${t.price}</span>
                                         </div>
                                         <div class="rating-widget mt--20">
                                             <a href="#" class="single-rating"><i class="fas fa-star"></i></a>
@@ -375,7 +376,7 @@
     </h2>
     <div class="container">
         <a class="promo-image overflow-image">
-            <img src="image/product/promo-product-image-huge--home-2.jpg" alt="">
+            <img src="" alt="">
         </a>
     </div>
 </section>
@@ -439,41 +440,6 @@
                 {"breakpoint":480, "settings": {"slidesToShow": 2} },
                 {"breakpoint":320, "settings": {"slidesToShow": 1} }
                 ]'>
-            <div class="single-slide">
-                <a href="#" class="overflow-image brand-image">
-                    <img src="image/brand/brand-1.png" alt="">
-                </a>
-            </div>
-            <div class="single-slide">
-                <a href="#" class="overflow-image brand-image">
-                    <img src="image/brand/brand-2.png" alt="">
-                </a>
-            </div>
-            <div class="single-slide">
-                <a href="#" class="overflow-image brand-image">
-                    <img src="image/brand/brand-3.png" alt="">
-                </a>
-            </div>
-            <div class="single-slide">
-                <a href="#" class="overflow-image brand-image">
-                    <img src="image/brand/brand-4.png" alt="">
-                </a>
-            </div>
-            <div class="single-slide">
-                <a href="#" class="overflow-image brand-image">
-                    <img src="image/brand/brand-5.png" alt="">
-                </a>
-            </div>
-            <div class="single-slide">
-                <a href="#" class="overflow-image brand-image">
-                    <img src="image/brand/brand-6.png" alt="">
-                </a>
-            </div>
-            <div class="single-slide">
-                <a href="#" class="overflow-image brand-image">
-                    <img src="image/brand/brand-7.png" alt="">
-                </a>
-            </div>
         </div>
     </div>
 </div>
