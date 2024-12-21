@@ -23,18 +23,28 @@ import java.util.Base64;
 public class SignOrderTool {
     public static void main(String[] args) {
         JFrame frame = new JFrame("Tool Ký Đơn Hàng");
-        frame.setSize(800, 600);
+        frame.setSize(900, 650);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setLayout(new BorderLayout());
 
         // Tạo Font và màu sắc
+        Font titleFont = new Font("Arial", Font.BOLD, 20);
         Font labelFont = new Font("Arial", Font.BOLD, 14);
-        Color backgroundColor = new Color(230, 240, 250);
-        Color buttonColor = new Color(70, 130, 180);
+        Color primaryColor = new Color(50, 115, 220);
+        Color secondaryColor = new Color(245, 245, 245);
 
-        // Panel chính
+        // Header
+        JLabel headerLabel = new JLabel("Tool Ký Đơn Hàng", JLabel.CENTER);
+        headerLabel.setFont(titleFont);
+        headerLabel.setOpaque(true);
+        headerLabel.setBackground(primaryColor);
+        headerLabel.setForeground(Color.WHITE);
+        headerLabel.setPreferredSize(new Dimension(900, 50));
+        frame.add(headerLabel, BorderLayout.NORTH);
+
+        // Main Panel
         JPanel mainPanel = new JPanel(new GridBagLayout());
-        mainPanel.setBackground(backgroundColor);
+        mainPanel.setBackground(secondaryColor);
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(10, 10, 10, 10);
 
@@ -45,7 +55,7 @@ public class SignOrderTool {
         gbc.gridy = 0;
         mainPanel.add(hashLabel, gbc);
 
-        JTextField hashField = new JTextField(25);
+        JTextField hashField = new JTextField(30);
         gbc.gridx = 1;
         mainPanel.add(hashField, gbc);
 
@@ -56,18 +66,15 @@ public class SignOrderTool {
         gbc.gridy = 1;
         mainPanel.add(publicKeyLabel, gbc);
 
-        JTextArea publicKeyArea = new JTextArea(5, 25);
+        JTextArea publicKeyArea = new JTextArea(5, 30);
         publicKeyArea.setLineWrap(true);
         publicKeyArea.setWrapStyleWord(true);
         publicKeyArea.setBorder(new LineBorder(Color.GRAY));
-        JScrollPane publicKeyScrollPane = new JScrollPane(publicKeyArea);
         gbc.gridx = 1;
-        mainPanel.add(publicKeyScrollPane, gbc);
+        mainPanel.add(new JScrollPane(publicKeyArea), gbc);
 
         // Nút tải file Public Key
         JButton uploadPublicKeyButton = new JButton("Tải File Public Key");
-        uploadPublicKeyButton.setBackground(buttonColor);
-        uploadPublicKeyButton.setForeground(Color.WHITE);
         gbc.gridx = 1;
         gbc.gridy = 2;
         mainPanel.add(uploadPublicKeyButton, gbc);
@@ -79,25 +86,22 @@ public class SignOrderTool {
         gbc.gridy = 3;
         mainPanel.add(privateKeyLabel, gbc);
 
-        JTextArea privateKeyArea = new JTextArea(5, 25);
+        JTextArea privateKeyArea = new JTextArea(5, 30);
         privateKeyArea.setLineWrap(true);
         privateKeyArea.setWrapStyleWord(true);
         privateKeyArea.setBorder(new LineBorder(Color.GRAY));
-        JScrollPane privateKeyScrollPane = new JScrollPane(privateKeyArea);
         gbc.gridx = 1;
-        mainPanel.add(privateKeyScrollPane, gbc);
+        mainPanel.add(new JScrollPane(privateKeyArea), gbc);
 
         // Nút tải file Private Key
         JButton uploadPrivateKeyButton = new JButton("Tải File Private Key");
-        uploadPrivateKeyButton.setBackground(buttonColor);
-        uploadPrivateKeyButton.setForeground(Color.WHITE);
         gbc.gridx = 1;
         gbc.gridy = 4;
         mainPanel.add(uploadPrivateKeyButton, gbc);
 
         // Nút Ký Hash
         JButton signButton = new JButton("Ký Mã Hash");
-        signButton.setBackground(buttonColor);
+        signButton.setBackground(primaryColor);
         signButton.setForeground(Color.WHITE);
         gbc.gridx = 1;
         gbc.gridy = 5;
@@ -110,16 +114,24 @@ public class SignOrderTool {
         gbc.gridy = 6;
         mainPanel.add(resultLabel, gbc);
 
-        JTextArea resultArea = new JTextArea(3, 25);
+        JTextArea resultArea = new JTextArea(3, 30);
         resultArea.setEditable(false);
         resultArea.setBorder(new LineBorder(Color.GRAY));
-        resultArea.setBackground(Color.WHITE);
-        JScrollPane resultScrollPane = new JScrollPane(resultArea);
         gbc.gridx = 1;
-        mainPanel.add(resultScrollPane, gbc);
+        mainPanel.add(new JScrollPane(resultArea), gbc);
 
         frame.add(mainPanel, BorderLayout.CENTER);
+
+        // Footer
+        JLabel footerLabel = new JLabel("© 2024 Ký Đơn Hàng - QNC Money", JLabel.CENTER);
+        footerLabel.setFont(new Font("Arial", Font.ITALIC, 12));
+        footerLabel.setOpaque(true);
+        footerLabel.setBackground(Color.LIGHT_GRAY);
+        footerLabel.setPreferredSize(new Dimension(900, 30));
+        frame.add(footerLabel, BorderLayout.SOUTH);
+
         frame.setVisible(true);
+
 
         // Sự kiện tải file Public Key
         uploadPublicKeyButton.addActionListener(new ActionListener() {
@@ -183,6 +195,11 @@ public class SignOrderTool {
                     // Kiểm tra public key có hợp lệ không
                     if (!isPublicKeyValid(hash, publicKeyContent)) {
                         JOptionPane.showMessageDialog(frame, "Public Key không hợp lệ hoặc không thuộc mã Hash này!");
+                        return;
+                    }
+                    // Kiểm tra xem private key có khớp với public key không
+                    if (!isKeyPairValid(publicKeyContent, privateKeyContent)) {
+                        JOptionPane.showMessageDialog(frame, "Private Key không khớp với Public Key!");
                         return;
                     }
 
@@ -273,6 +290,31 @@ public class SignOrderTool {
         }
         return false;
     }
+    private static boolean isKeyPairValid(String publicKeyContent, String privateKeyContent) {
+        try {
+            // Làm sạch public key và private key
+            PublicKey publicKey = getPublicKeyFromInput(publicKeyContent);
+            PrivateKey privateKey = getPrivateKeyFromInput(privateKeyContent);
+
+            // Chuỗi dữ liệu mẫu để kiểm tra
+            String testMessage = "KeyPairValidationTest";
+
+            // Ký dữ liệu bằng private key
+            Signature signature = Signature.getInstance("SHA256withRSA");
+            signature.initSign(privateKey);
+            signature.update(testMessage.getBytes("UTF-8"));
+            byte[] signedData = signature.sign();
+
+            // Xác minh chữ ký bằng public key
+            signature.initVerify(publicKey);
+            signature.update(testMessage.getBytes("UTF-8"));
+            return signature.verify(signedData);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false; // Nếu có lỗi, nghĩa là key pair không hợp lệ
+        }
+    }
+
 
     // Lưu chữ ký vào database
     private static void saveSignatureToDatabase(String hash, String signature) {
