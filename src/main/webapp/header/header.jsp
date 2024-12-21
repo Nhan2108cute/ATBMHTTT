@@ -21,9 +21,6 @@ for (Product p : list){
         <div class="header-top bg-ash">
             <div class="container">
                 <div class="row align-items-center">
-                    <div class="col-sm-6 text-center text-sm-start">
-                        <h6 class="font-weight-300">Chào mừng đến Petmark</h6>
-                    </div>
                 </div>
             </div>
         </div>
@@ -83,22 +80,22 @@ for (Product p : list){
                             <!-- Mainmenu Start -->
                             <ul class="mainmenu">
                                 <li class="mainmenu__item  ">
-                                    <a href="home" class="mainmenu__link">Trang chủ</a>
+                                    <a href="home" class="mainmenu__link">TRANG CHỦ</a>
                                 </li>
                                 <li class="mainmenu__item ">
-                                    <a href="list-product" class="mainmenu__link"> Sản phẩm</a>
+                                    <a href="list-product" class="mainmenu__link"> SẢN PHẨM</a>
                                 </li>
                                 <li class="mainmenu__item ">
-                                    <a href="FAQ" class="mainmenu__link">Giải đáp</a>
+                                    <a href="FAQ" class="mainmenu__link">GIẢI ĐÁP</a>
                                 </li>
                                 <li class="mainmenu__item ">
-                                    <a href="contact" class="mainmenu__link">Liên hệ</a>
+                                    <a href="contact" class="mainmenu__link">LIÊN HỆ</a>
                                 </li>
                                 <li class="mainmenu__item ">
-                                    <a href="cart.jsp" class="mainmenu__link">Giỏ hàng</a>
+                                    <a href="cart.jsp" class="mainmenu__link">GIỎ HÀNG</a>
                                 </li>
                                 <li class="mainmenu__item ">
-                                    <a href="blog" class="mainmenu__link">Tin tức</a>
+                                    <a href="blog" class="mainmenu__link">TIN TỨC</a>
                                 </li>
 
                                 <c:if test="${sessionScope.user.admin == 2}">

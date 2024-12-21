@@ -14,7 +14,7 @@
 		<link rel="stylesheet" href="css/plugins.css" />
 		<link rel="stylesheet" href="css/main.css" />
 		<link rel="shortcut icon" type="image/x-icon" href="image/favicon.ico">
-		<title>Petmark ❤️</title>
+		<title>Giỏ Hàng</title>
 	</head>
 	<body class="">
 		<div class="site-wrapper">
