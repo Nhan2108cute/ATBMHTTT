@@ -104,7 +104,8 @@ CREATE TABLE `cart` (
 DROP TABLE IF EXISTS `hoadon`;
 CREATE TABLE `hoadon`  (
                            `id` int NOT NULL AUTO_INCREMENT,
-                           `ngaylap_hd` timestamp NOT NULL DEFAULT current_timestamp,
+                           `ngaylap_hd` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP, -- Chỉ tạo timestamp khi thêm mới
+                           `lancuoithaydoi_hd` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
                            `id_ngdung` int NOT NULL,
                            `ten` varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
                            `dia_chi_giao_hang` varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
