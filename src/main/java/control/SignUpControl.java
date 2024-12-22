@@ -32,7 +32,7 @@ public class SignUpControl extends HttpServlet {
             User u = dao.checkUser(username);
             if(u == null){
                 dao.signup(fullName, phone, address, email, username, pass);
-                dao.create_key();
+                //dao.create_key();
                 response.sendRedirect("login");
             } else {
                 request.setAttribute("mess2", "error");

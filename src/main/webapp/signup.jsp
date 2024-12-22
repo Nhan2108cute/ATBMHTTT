@@ -18,7 +18,7 @@
     <link rel="shortcut icon" type="image/x-icon" href="image/favicon.ico">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.0/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-    <title>Petmark ❤️</title>
+    <title>Chào Mừng Đến Với QCN Money</title>
 </head>
 <body class="petmark-theme-2">
 <div class="site-wrapper">

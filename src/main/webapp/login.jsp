@@ -15,7 +15,7 @@
     <link rel="stylesheet" href="css/plugins.css" />
     <link rel="stylesheet" href="css/main.css" />
     <link rel="shortcut icon" type="image/x-icon" href="image/favicon.ico">
-    <title>Petmark ❤️</title>
+    <title>QCN Money</title>
 </head>
 <body class="">
 <div class="site-wrapper">
@@ -33,7 +33,7 @@
     =============================================-->
     <main class="page-section pb--10 pt--50">
         <div class="container">
-           
+
             <div class="row">
                 <div class="alert alert-danger ${mess == null ? "sr-only":""}" role="alert">
                     Sai tên đăng nhập hoặc mật khẩu

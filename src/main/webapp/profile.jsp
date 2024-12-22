@@ -18,8 +18,124 @@
     <link rel="shortcut icon" type="image/x-icon" href="image/favicon.ico">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.0/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <style>
+        .popup {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+        .popup-content {
+            position: relative;
+            background: #fff;
+            width: 75%;
+            height: 55%;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: left;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f9;
+        }
+        .randomGenerateKey {
+            display: flex;
+            align-items: center;
+        }
 
-    <title>Petmark ❤️</title>
+        .keys {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 12px;
+            margin-bottom: 12px;
+        }
+
+        .key-section {
+            flex: 1;
+            margin-right: 10px;
+        }
+
+        .key-section h3 {
+            margin: 0 0 5px;
+        }
+
+        textarea {
+            width: 100%;
+            height: 150px;
+            resize: none;
+            padding: 10px;
+            font-family: monospace;
+            font-size: 12px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        .import-export-key {
+            justify-content: center;
+            display: flex;
+        }
+
+        .btn-group {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 10px;
+        }
+
+        .btn-group button, .actions button {
+            padding: 8px 12px;
+            font-size: 14px;
+            border: none;
+            cursor: pointer;
+            background-color: #007BFF;
+            color: #fff;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+
+        .btn-group button:hover, .actions button:hover {
+            background-color: #0056b3;
+        }
+
+        .actions {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 20px;
+        }
+
+        input.import{
+            margin-top: 5px;
+        }
+        input.export{
+            margin-top: 5px;
+        }
+        input[type="file"]::-webkit-file-upload-button {
+            visibility: hidden; /* Ẩn nút mặc định */
+        }
+
+        input[type="file"]::before {
+            content: "Import";
+            display: inline-block;
+            background-color: #198754;
+            color: white;
+            padding: 0px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            text-align: center;
+        }
+
+        input[type="file"]:hover::before {
+            background-color: #198754;
+        }
+
+    </style>
+    <title>Tài Khoản</title>
 </head>
 <body class="">
 <jsp:include page="header/header.jsp"></jsp:include>
@@ -40,9 +156,9 @@
                         <!-- My Account Tab Menu Start -->
                         <div class="col-lg-3 col-12">
                             <div class="myaccount-tab-menu nav" role="tablist">
-                                <a href="#dashboad" class="active" data-bs-toggle="tab"><i
+                                <a href="#tools" class="active" data-bs-toggle="tab"><i
                                         class="fas fa-tachometer-alt"></i>
-                                    Bộ điều khiển</a>
+                                    Công Cụ Ký Đơn Hàng</a>
                                 <a href="#orders" data-bs-toggle="tab"><i class="fa fa-cart-arrow-down"></i> Lịch sử mua
                                     hàng</a>
                                 <a href="#payment-method" data-bs-toggle="tab"><i class="fa fa-credit-card"></i> Phương
@@ -61,16 +177,33 @@
                         <div class="col-lg-9 col-12 mt--30 mt-lg-0">
                             <div class="tab-content" id="myaccountContent">
                                 <!-- Single Tab Content Start -->
-                                <div class="tab-pane fade show active" id="dashboad" role="tabpanel">
+                                <div class="tab-pane fade show active" id="tools" role="tabpanel">
                                     <div class="myaccount-content">
-                                        <h3 style="text-align: center">Bộ điều khiển</h3>
+                                        <h3 style="text-align: center">Công cụ ký đơn hàng</h3>
                                         <div class="welcome mb-20">
-                                            <p>Xin chào, <strong>${sessionScope.user.fullName}</strong>
+                                            <p>Xin chào, <strong>${sessionScope.user.fullName}</strong></p>
                                         </div>
-                                        <p class="mb-0">Ở đây, bạn có thể dễ dàng kiểm tra và xem các đơn đặt hàng gần
-                                            đây, quản lý địa chỉ giao hàng và thanh toán cũng như chỉnh sửa mật khẩu và
-                                            chi tiết tài khoản của mình.
-                                        </p>
+                                        <p class="mb-0">Bạn có thể tải công cụ ký đơn hàng tại đây:</p>
+
+                                        <!-- Nút tải file -->
+                                        <a href="https://drive.google.com/uc?export=download&id=1OCIIi4JXawbksszj_pOL2G5h40QK5whk
+
+"
+                                           target="_blank"
+                                           onclick="window.open(this.href, '_blank'); setTimeout(() => { window.open('', '_self').close(); }, 1000);"
+                                           style="display: inline-block; padding: 10px 20px; background-color: #007bff; color: #fff; text-decoration: none; border-radius: 5px; font-size: 16px;">
+                                            Tải Tool Ký Đơn Hàng (File Zip)
+                                        </a>
+                                        <a href="https://drive.google.com/uc?export=download&id=1r13uoBUXBnW9jQCaP2kVBCXpERnSeMFP
+
+
+"
+                                           target="_blank"
+                                           onclick="window.open(this.href, '_blank'); setTimeout(() => { window.open('', '_self').close(); }, 1000);"
+                                           style="display: inline-block; padding: 10px 20px; background-color: #007bff; color: #fff; text-decoration: none; border-radius: 5px; font-size: 16px;">
+                                            Tải Tool Ký Đơn Hàng (.exe)
+                                        </a>
+                                        <p><strong class="mb-0">Nếu không tải được File Zip thì vui lòng tải file .exe</strong></p>
                                     </div>
                                 </div>
                                 <!-- Single Tab Content End -->
@@ -92,12 +225,13 @@
                                                     <th>Tổng tiền</th>
                                                     <th>Ghi chú</th>
                                                     <th>Hoạt động</th>
+                                                    <th>Mã Hash</th>
+                                                    <th>Chữ Ký</th>
                                                 </tr>
                                                 </thead>
                                                 <tbody>
                                                 <c:forEach var="bill" items="${sessionScope.userBills}" varStatus="ss">
                                                     <tr>
-                                                            <%--<td>${ss.index+1}</td>--%>
                                                         <td>${bill.id}</td>
                                                         <td>${bill.ten}</td>
                                                             <%--<td>${bill.nguoidung}</td>--%>
@@ -105,6 +239,18 @@
                                                         <td>${bill.diachi}</td>
                                                         <td>${bill.tongTien} VNĐ</td>
                                                         <td>${bill.ghiChu}</td>
+                                                        <td>${""}</td>
+                                                        <td>${bill.hash}</td>
+                                                        <td>
+                                                            <c:choose>
+                                                                <c:when test="${empty bill.signature || bill.signature eq ''}">
+                                                                    <span class="text-danger">Chưa Ký</span>
+                                                                </c:when>
+                                                                <c:otherwise>
+                                                                    <span class="text-success">Đã Ký</span>
+                                                                </c:otherwise>
+                                                            </c:choose>
+                                                        </td>
                                                         <c:set var="sessionValue" value="${sessionScope.error_id}"/>
                                                         <c:set var="compareValue" value="${bill.id}"/>
                                                         <c:if test="${sessionValue == compareValue}">
@@ -217,7 +363,7 @@
                                         <form action="#" method="post" id="revokeKeyForm">
                                             <div class="row justify-content-center mt-3">
                                                 <div class="col-12 col-md-6 text-center">
-                                                    <p class="text-danger">Đưa key về trạng thái không chấp nhận mới</p>
+                                                    <p class="text-danger">Đưa key về trạng thái bị vô hiệu hoá</p>
                                                     <button id="revokeKeyBtn" class="btn btn-danger" type="submit">Yêu
                                                         cầu
                                                     </button>
@@ -228,17 +374,16 @@
                                         <hr class="my-4">
 
                                         <!-- Form tạo key mới -->
-                                        <form action="#" method="post" id="generateNewKeyForm">
+                                        <div action="#" method="post">
                                             <div class="row justify-content-center mt-3">
                                                 <div class="col-12 col-md-6 text-center">
-                                                    <p class="text-danger">Tạo key mới khi đã đưa key về trạng thái
-                                                        không chấp nhận</p>
-                                                    <button id="genKeyBtn" class="btn btn-success" type="submit">Tạo key
-                                                        mới
+                                                    <p class="text-danger">Nếu khách hàng chưa có key, hãy nhấn tạo key
+                                                        mới</p>
+                                                    <button id="genKeyBtn" class="btn btn-success">Tạo key mới
                                                     </button>
                                                 </div>
                                             </div>
-                                        </form>
+                                        </div>
                                     </div>
                                 </div>
 
@@ -250,6 +395,53 @@
                     </div>
                 </div>
             </div>
+        </div>
+    </div>
+</div>
+<div class="popup">
+    <div class="popup-content">
+        <div class="row">
+            <div class="form-group  col-md-12">
+                          <span class="thong-tin-thanh-toan">
+                            <h5>Thêm cặp khoá mới</h5>
+                          </span>
+            </div>
+        </div>
+        <div>
+            <form action="add" method="post" id="generateNewKeyForm">
+                <div class="randomGenerateKey">
+                    <input class="btn btn-success" value="Tạo ngẫu nhiên" onclick="generateKeys()"
+                           style="float: right">
+                </div>
+                <div class="keys">
+                    <div class="key-section">
+                        <label class="control-label">Public Key</label>
+                        <textarea name="publicKeyContent" id="publicKeyContent" type="text" placeholder="Nhập Public Key của bạn ở đây" required>
+                                </textarea>
+                        <div class="import-export-key">
+                            <input type="file" id="importPublicKey" class="btn btn-success import hidden-input" value="Import" onchange="readPublicKeyContent(this)"
+                                   style="float: right">
+                            <input type="button" class="btn btn-default export" value="Export" style="float: right">
+                        </div>
+                    </div>
+                    <div class="key-section">
+                        <label class="control-label">Private Key</label>
+                        <textarea name="privateKeyContent" id="privateKeyContent" type="text" placeholder="Nhập Private Key của bạn ở đây" required>
+                                </textarea>
+                        <div class="import-export-key">
+                            <input type="file" id="importPrivateKey" class="btn btn-success import hidden-input" value="Import" onchange="readPrivateKeyContent(this)"
+                                   style="float: right">
+                            <input type="button" class="btn btn-default export" value="Export" style="float: right">
+                        </div>
+                    </div>
+                </div>
+                <div class="">
+                    <input type="button" class="btn btn-default close"
+                           data-dismiss="modal" value="Hủy" style="float: right">
+                    <input type="submit" class="btn btn-success" value="Thêm"
+                           style="float: right">
+                </div>
+            </form>
         </div>
     </div>
 </div>
@@ -291,15 +483,16 @@
         });
     });
 
+
     document.addEventListener('DOMContentLoaded', function () {
         var keyExists = ${sessionScope.keyExists};
-        var revokeKeyBtn = document.getElementById('revokeKeyBtn');
+        var reportLostKeyBtn = document.getElementById('reportLostKeyBtn');
 
         // Kiểm tra điều kiện và tắt/bật button
         if (!keyExists) {
-            revokeKeyBtn.disabled = true;
+            reportLostKeyBtn.disabled = true;
         } else {
-            revokeKeyBtn.disabled = false;
+            reportLostKeyBtn.disabled = false;
         }
     });
 
@@ -315,14 +508,47 @@
         }
     });
 
-    $(document).ready(function () {
+
+        // Bắt sự kiện khi nhấn vào nút "Tạo key mới"
+        $('#generateNewKeyForm').submit(function (event) {
+            // Ngăn chặn gửi form mặc định
+            event.preventDefault();
+            console.log("generateNewKey");
+            const publicKey = document.getElementById('publicKeyContent').value;
+            // Gửi yêu cầu đến servlet
+            $.post('KeyManagementServlet', {action: 'generateNewKey', publicKey: publicKey},  function (response) {
+                // Xử lý kết quả nếu cần
+                alert(response);
+                // cập nhật button sau khi tạo key thành cong
+                if (response.includes("đã được xử lý")) {
+                    var revokeKeyBtn = document.getElementById('revokeKeyBtn');
+                    var genKeyBtn = document.getElementById('genKeyBtn');
+                    var keyStatus = document.getElementById('keyStatus');
+
+                    // cập nhật status
+                    keyStatus.innerHTML = '<p class="text-success" style="font-size: large">Tài khoản của bạn đã có key</p>';
+
+                    // cập nhật buttons
+                    revokeKeyBtn.disabled = false;
+                    genKeyBtn.disabled = true;
+
+                    // đóng popup
+                    document.querySelector(".popup").style.display = "none";
+                }
+
+                // location.reload();
+            }).fail(function () {
+                alert("Có lỗi xảy ra khi gửi Public Key đến server!");
+            });
+        });
+
         // Bắt sự kiện khi nhấn vào nút "Yêu cầu đưa key về trạng thái không chấp nhận mới"
         $('#revokeKeyForm').submit(function (event) {
             // Ngăn chặn gửi form mặc định
             event.preventDefault();
 
             // Hiển thị hộp thoại xác nhận
-            var confirmResult = confirm("Bạn có chắc chắn muốn yêu cầu đưa key về trạng thái không chấp nhận mới không?");
+            var confirmResult = confirm("Bạn có chắc chắn muốn đưa key hiện tại về trạng thái không chấp nhận xác thực mới không?");
 
             // Nếu người dùng xác nhận, gửi yêu cầu đến servlet
             if (confirmResult) {
@@ -330,22 +556,21 @@
                 $.post('KeyManagementServlet', {action: 'revokeKey'}, function (response) {
                     // Xử lý kết quả nếu cầu
                     alert(response);
+                    if (response.includes("đã được xử lý")) {
+                        var revokeKeyBtn = document.getElementById('revokeKeyBtn');
+                        var genKeyBtn = document.getElementById('genKeyBtn');
+                        var keyStatus = document.getElementById('keyStatus');
+
+                        // Cập nhật
+                        keyStatus.innerHTML = '<p class="text-warning" style="font-size: large">Tài khoản của bạn chưa có key</p>';
+
+                        // Update buttons
+                        revokeKeyBtn.disabled = true;
+                        genKeyBtn.disabled = false;
+                    }
                 });
             }
         });
-
-        // Bắt sự kiện khi nhấn vào nút "Tạo key mới"
-        $('#generateNewKeyForm').submit(function (event) {
-            // Ngăn chặn gửi form mặc định
-            event.preventDefault();
-            console.log("generateNewKey");
-            // Gửi yêu cầu đến servlet
-            $.post('KeyManagementServlet', {action: 'generateNewKey'}, function (response) {
-                // Xử lý kết quả nếu cần
-                alert(response);
-            });
-        });
-    });
 
 
     var isLoggedIn = <%= session.getAttribute("user") != null %>;
@@ -384,7 +609,137 @@
     // Run the function when the page is loaded
     pollForDataChange();
 
+    document.getElementById("genKeyBtn").addEventListener("click", function () {
+        document.querySelector(".popup").style.display = "flex";
+    })
+    document.querySelector(".close").addEventListener("click", function () {
+        document.querySelector(".popup").style.display = "none";
+    })
+    function readPublicKeyContent() {
+        var input = document.getElementById('importPublicKey');
+        var fileContentElement = document.getElementById('publicKeyContent');
 
+        if (input.files.length > 0) {
+            var file = input.files[0];
+            var reader = new FileReader();
+
+            reader.onload = function (e) {
+                var fileContent = e.target.result;
+                fileContentElement.value = fileContent;
+            };
+
+            // Đọc nội dung của tệp tin
+            reader.readAsText(file);
+        }
+    }
+    function readPublicKeyContent() {
+        var input = document.getElementById('importPublicKey'); // Lấy thẻ input file
+        var publicKeyContentElement = document.getElementById('publicKeyContent'); // Lấy thẻ textarea
+
+        // Kiểm tra nếu đã chọn file
+        if (input.files.length > 0) {
+            var file = input.files[0];
+            var reader = new FileReader();
+
+            // Đọc nội dung file thành công
+            reader.onload = function (e) {
+                var publicKeyContent = e.target.result;
+                publicKeyContentElement.value = publicKeyContent; // Gán nội dung file vào textarea
+            };
+
+            // Đọc file dưới dạng văn bản
+            reader.readAsText(file);
+        }
+    }
+    function readPrivateKeyContent() {
+        var input = document.getElementById('importPrivateKey'); // Lấy thẻ input file
+        var privateKeyContentElement = document.getElementById('privateKeyContent'); // Lấy thẻ textarea
+
+        // Kiểm tra nếu đã chọn file
+        if (input.files.length > 0) {
+            var file = input.files[0];
+            var reader = new FileReader();
+
+            // Đọc nội dung file thành công
+            reader.onload = function (e) {
+                var privateKeyContent = e.target.result;
+                privateKeyContentElement.value = privateKeyContent; // Gán nội dung file vào textarea
+            };
+
+            // Đọc file dưới dạng văn bản
+            reader.readAsText(file);
+        }
+    }
+    // Hàm Export Public Key
+    function exportPublicKey() {
+        var publicKeyContent = document.getElementById('publicKeyContent').value;
+        if (!publicKeyContent.trim()) {
+            alert("Public Key trống. Không thể xuất file.");
+            return;
+        }
+        downloadPublicKey("publicKey.pem", publicKeyContent);
+    }
+
+    // Hàm Export Private Key
+    function exportPrivateKey() {
+        var privateKeyContent = document.getElementById('privateKeyContent').value;
+        if (!privateKeyContent.trim()) {
+            alert("Private Key trống. Không thể xuất file.");
+            return;
+        }
+        downloadPrivateKey("privateKey.pem", privateKeyContent);
+    }
+
+    // Hàm Tải File Xuống
+    function downloadPublicKey(filename, content) {
+        const element = document.createElement('a');
+        const file = new Blob(["-----BEGIN PUBLIC KEY-----\n" + content + "\n-----END PUBLIC KEY-----"], { type: 'text/plain' });
+        element.href = URL.createObjectURL(file);
+        element.download = filename;
+        document.body.appendChild(element);
+        element.click();
+        document.body.removeChild(element);
+    }
+
+    // Hàm Tải File Xuống
+    function downloadPrivateKey(filename, content) {
+        const element = document.createElement('a');
+        const file = new Blob(["-----BEGIN PRIVATE KEY-----\n" + content + "\n-----END PRIVATE KEY-----"], { type: 'text/plain' });
+        element.href = URL.createObjectURL(file);
+        element.download = filename;
+        document.body.appendChild(element);
+        element.click();
+        document.body.removeChild(element);
+    }
+
+    // Gán sự kiện cho nút Export
+    document.querySelectorAll('.export').forEach(function(button) {
+        button.addEventListener('click', function() {
+            if (this.previousElementSibling.id === 'importPublicKey') {
+                exportPublicKey();
+            } else if (this.previousElementSibling.id === 'importPrivateKey') {
+                exportPrivateKey();
+            }
+        });
+    });
+    function generateKeys() {
+        fetch('GenerateKeyServlet') // Gọi API Servlet
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json(); // Chuyển response thành JSON
+            })
+            .then(data => {
+                // Gán dữ liệu JSON vào textarea
+                document.getElementById('publicKeyContent').value = data.publicKey;
+                document.getElementById('privateKeyContent').value = data.privateKey;
+            })
+            .catch(error => {
+                console.error('Error generating keys:', error);
+                alert('Có lỗi xảy ra khi tạo cặp khóa: ' + error.message);
+            });
+    }
 </script>
 <script src="js/plugins.js"></script>
 <script src="js/ajax-mail.js"></script>

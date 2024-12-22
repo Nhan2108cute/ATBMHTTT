@@ -6,6 +6,7 @@ import javax.mail.*;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
+import java.security.PublicKey;
 import java.sql.*;
 import java.sql.Date;
 import java.util.*;
@@ -468,6 +469,36 @@ public class DAO {
         return list;
     }
 
+    public int getTotalBill() {
+        String query = "Select count(*) from hoadon";
+        try {
+            conn = new DBConnect().getConnection();
+            ps = conn.prepareStatement(query);
+            rs = ps.executeQuery();
+            while (rs.next()) {
+                return rs.getInt(1);
+            }
+
+        } catch (Exception e) {
+        }
+        return 0;
+    }
+
+//    public int getTotalProductAlmostOutOfStock() {
+//        String query = "Select count(*) from sanpham";
+//        try {
+//            conn = new DBConnect().getConnection();
+//            ps = conn.prepareStatement(query);
+//            rs = ps.executeQuery();
+//            while (rs.next()) {
+//                return rs.getInt(1);
+//            }
+//
+//        } catch (Exception e) {
+//        }
+//        return 0;
+//    }
+
     public int getTotalUser() {
         String query = "Select count(*) from nguoidung";
         try {
@@ -771,7 +802,8 @@ public class DAO {
     public void addCTHoaDon(int idHoaDon, int soLuong, int idSanPham) {
     }
 
-    public void create_key() {
+    public void create_key(String publicKey) {
+
         try {
             // Kết nối đến cơ sở dữ liệu
             Connection connection = new DBConnect().getConnection();
@@ -786,7 +818,7 @@ public class DAO {
                 String userName = resultSet.getString("hoten");
                 if (!isUserIdExists(userId)) {
                     // Tạo và lưu khóa
-                    generateAndStoreKeyPair(userId, userName);
+                    storePublicKeyInDatabase(userId, userName, publicKey);
                 } else {
                     System.out.println("Key pair not generated for user " + userName + " because user_id already exists.");
                 }
@@ -814,6 +846,22 @@ public class DAO {
         }
     }
 
+    public boolean checkDuplicatePublicKey(String publicKey) {
+        String query = "SELECT COUNT(*) FROM public_keys WHERE key_value = ?";
+        try {
+            conn = new DBConnect().getConnection();
+            ps = conn.prepareStatement(query);
+            ps.setString(1, publicKey);
+            rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1) > 0; // Nếu COUNT > 0 thì Public Key đã tồn tại
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
     public void removeAuthKey(int uId) {
         try {
             conn = new DBConnect().getConnection();
@@ -831,8 +879,8 @@ public class DAO {
         try {
             conn = new DBConnect().getConnection();
             String sql = "UPDATE public_keys\n" +
-                    "SET status = 'Huy'\n" +
-                    "WHERE status <> 'Huy' AND created_at < DATE_SUB(CURDATE(), INTERVAL 1 MONTH) AND user_id = ?";
+                    "SET status = 'Mat'\n" +
+                    "WHERE status <> 'Mat' AND created_at < DATE_SUB(CURDATE(), INTERVAL 1 MONTH) AND user_id = ?";
             ps = conn.prepareStatement(sql);
             ps.setInt(1, uId);
             ps.executeUpdate();

@@ -97,22 +97,22 @@
                         </tr>
                         </thead>
                         <tbody>
-                     <% DAO dao = new DAO();
+                        <% DAO dao = new DAO();
 
-                         for(Category ca : dao.getAllCategory()){%>
-                            <tr>
-                                <td width="10"><input type="checkbox" name="check1" value="1"></td>
-                                <td><%=ca.getcID()%></td>
-                                <td><%=ca.getcName()%></td>
+                            for(Category ca : dao.getAllCategory()){%>
+                        <tr>
+                            <td width="10"><input type="checkbox" name="check1" value="1"></td>
+                            <td><%=ca.getcID()%></td>
+                            <td><%=ca.getcName()%></td>
 
 
-                                <td><a href="delete-category?id_ca=<%=ca.getcID()%>" class="btn btn-primary btn-sm trash" title="Xóa"><i class="fas fa-trash-alt"></i>
-                                </a>
+                            <td><a href="delete-category?id_ca=<%=ca.getcID()%>" class="btn btn-primary btn-sm trash" title="Xóa"><i class="fas fa-trash-alt"></i>
+                            </a>
 
-                                </td>
-                                </td>
-                            </tr>
-                       <%}%>
+                            </td>
+                            </td>
+                        </tr>
+                        <%}%>
                         </tbody>
                     </table>
                 </div>

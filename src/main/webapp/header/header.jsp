@@ -10,9 +10,9 @@
     int count = list.size();
     int total =0;
     int total1 = 0;
-for (Product p : list){
-    total1 += p.getPrice();
-}
+    for (Product p : list){
+        total1 += p.getPrice();
+    }
 %>
 
 <header class="header petmark-header-1">
@@ -21,9 +21,6 @@ for (Product p : list){
         <div class="header-top bg-ash">
             <div class="container">
                 <div class="row align-items-center">
-                    <div class="col-sm-6 text-center text-sm-start">
-                        <h6 class="font-weight-300">Chào mừng đến Petmark</h6>
-                    </div>
                 </div>
             </div>
         </div>
@@ -83,22 +80,22 @@ for (Product p : list){
                             <!-- Mainmenu Start -->
                             <ul class="mainmenu">
                                 <li class="mainmenu__item  ">
-                                    <a href="home" class="mainmenu__link">Trang chủ</a>
+                                    <a href="home" class="mainmenu__link">TRANG CHỦ</a>
                                 </li>
                                 <li class="mainmenu__item ">
-                                    <a href="list-product" class="mainmenu__link"> Sản phẩm</a>
+                                    <a href="list-product" class="mainmenu__link"> SẢN PHẨM</a>
                                 </li>
                                 <li class="mainmenu__item ">
-                                    <a href="FAQ" class="mainmenu__link">Giải đáp</a>
+                                    <a href="FAQ" class="mainmenu__link">GIẢI ĐÁP</a>
                                 </li>
                                 <li class="mainmenu__item ">
-                                    <a href="contact" class="mainmenu__link">Liên hệ</a>
+                                    <a href="contact" class="mainmenu__link">LIÊN HỆ</a>
                                 </li>
                                 <li class="mainmenu__item ">
-                                    <a href="cart.jsp" class="mainmenu__link">Giỏ hàng</a>
+                                    <a href="cart.jsp" class="mainmenu__link">GIỎ HÀNG</a>
                                 </li>
                                 <li class="mainmenu__item ">
-                                    <a href="blog" class="mainmenu__link">Tin tức</a>
+                                    <a href="blog" class="mainmenu__link">TIN TỨC</a>
                                 </li>
 
                                 <c:if test="${sessionScope.user.admin == 2}">
@@ -113,65 +110,65 @@ for (Product p : list){
                     </div>
                     <!-- Cart block-->
                     <c:if test="${sessionScope.user != null}">
-                    <div class="col-lg-2 col-6 offset-6 offset-md-0 col-md-3 order-3" style="margin-left: 25%">
-                        <div class="cart-widget-wrapper slide-down-wrapper">
-                            <div class="cart-widget slide-down--btn">
-                                <div class="cart-icon">
-                                    <i class="ion-bag"></i>
-                                    <span class="cart-count-badge">
+                        <div class="col-lg-2 col-6 offset-6 offset-md-0 col-md-3 order-3" style="margin-left: 25%">
+                            <div class="cart-widget-wrapper slide-down-wrapper">
+                                <div class="cart-widget slide-down--btn">
+                                    <div class="cart-icon">
+                                        <i class="ion-bag"></i>
+                                        <span class="cart-count-badge">
                      <%=count%>
                       </span>
-                                </div>
-                                <div class="cart-text">
+                                    </div>
+                                    <div class="cart-text">
 
-                                    <span class="d-block"></span>
-                                    <strong><span class="amount"><span
-                                            class="currencySymbol">
+                                        <span class="d-block"></span>
+                                        <strong><span class="amount"><span
+                                                class="currencySymbol">
                                         <%=total1%> </span></span></strong>
+                                    </div>
                                 </div>
-                            </div>
 
-                            <div class="slide-down--item ">
-                                <div class="cart-widget-box">
+                                <div class="slide-down--item ">
+                                    <div class="cart-widget-box">
 
-                                    <ul class="cart-items">
-                                        <%for (Product p : list){%>
-                                        <li class="single-cart">
-                                            <div href="#" class="cart-product">
-                                                <div class="cart-product-img">
-                                                    <img src="<%=p.getImage()%>"
-                                                         alt="Selected Products">
+                                        <ul class="cart-items">
+                                            <%for (Product p : list){%>
+                                            <li class="single-cart">
+                                                <div href="#" class="cart-product">
+                                                    <div class="cart-product-img">
+                                                        <img src="<%=p.getImage()%>"
+                                                             alt="Selected Products">
+                                                    </div>
+                                                    <div class="product-details">
+                                                        <h4 class="product-details--title"><%=p.getName()%></h4>
+                                                        <span class="product-details--price">1 x <%=p.getPrice()%></span>
+
+                                                    </div>
+                                                    <a href="DelectProduct?id=<%=p.getId()%>"><img src="image/icon-logo/tr.jpg" class="far fa-trash-alt" style="width: 30%;height: 52%;margin-left: 65%;margin-top: 5px;"></img></a>
                                                 </div>
-                                                <div class="product-details">
-                                                    <h4 class="product-details--title"><%=p.getName()%></h4>
-                                                    <span class="product-details--price">1 x <%=p.getPrice()%></span>
+                                            </li>
+                                            <%
+                                                }
+                                            %>
 
+                                            <li class="single-cart">
+                                                <div class="cart-product__subtotal">
+                                                    <span class="subtotal--title">Tổng phụ</span>
+                                                    <span class="subtotal--price"><%=total1 %></span>
                                                 </div>
-                                                <a href="DelectProduct?id=<%=p.getId()%>"><img src="image/icon-logo/tr.jpg" class="far fa-trash-alt" style="width: 30%;height: 52%;margin-left: 65%;margin-top: 5px;"></img></a>
-                                            </div>
-                                        </li>
-                                        <%
-                                        }
-                                        %>
+                                            </li>
 
-                                        <li class="single-cart">
-                                            <div class="cart-product__subtotal">
-                                                <span class="subtotal--title">Tổng phụ</span>
-                                                <span class="subtotal--price"><%=total1 %></span>
-                                            </div>
-                                        </li>
-
-                                        <li class="single-cart">
-                                            <div class="cart-buttons">
-                                                <a href="cart.jsp" class="btn btn-outlined">Xem Giỏ</a>
-                                                <a href="checkout.jsp" class="btn btn-outlined">Thanh toán</a>
-                                            </div>
-                                        </li>
-                                    </ul>
+                                            <li class="single-cart">
+                                                <div class="cart-buttons">
+                                                    <a href="cart.jsp" class="btn btn-outlined">Xem Giỏ</a>
+                                                    <a href="checkout.jsp" class="btn btn-outlined">Thanh toán</a>
+                                                </div>
+                                            </li>
+                                        </ul>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
                     </c:if>
                     <!-- Mobile Menu -->
                     <div class="col-12 d-flex d-lg-none order-2 mobile-absolute-menu">

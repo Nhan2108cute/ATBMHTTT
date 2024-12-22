@@ -8,8 +8,8 @@ public class Cart {
     private long cart_id;
 
     public Cart() {
-      list = new ArrayList<>();
-      cart_id = System.currentTimeMillis();
+        list = new ArrayList<>();
+        cart_id = System.currentTimeMillis();
     }
 
     public Cart(ArrayList<Product> list, long cart_id) {

@@ -15,7 +15,7 @@
   <link rel="stylesheet" href="css/plugins.css" />
   <link rel="stylesheet" href="css/main.css" />
   <link rel="shortcut icon" type="image/x-icon" href="image/favicon.ico">
-  <title>Petmark ❤️</title>
+  <title>Liên Hệ</title>
 </head>
 <body class="">
 <div class="site-wrapper">
@@ -89,7 +89,7 @@
 
     <div class="container">
       <div class="ct-section-title-2 mb--60 text-center">
-        <h2>GỬI YÊU CẦU ĐẾN PETMARK</h2>
+        <h2>GỬI YÊU CẦU ĐẾN QCN Money</h2>
       </div>
       <form action="" class="site-form contact-form-2" id="contact-form">
         <div class="row justify-content-center text-center">

@@ -15,7 +15,7 @@
   <link rel="stylesheet" href="css/plugins.css" />
   <link rel="stylesheet" href="css/main.css" />
   <link rel="shortcut icon" type="image/x-icon" href="image/favicon.ico">
-  <title>Petmark - Pet Care & Veterinary Bootstrap Template</title>
+  <title>QCN Money - Chăm Sóc Khách Hàng</title>
 </head>
 <body class="">
 <div class="site-wrapper">
@@ -45,13 +45,13 @@
               <h2 class="mb-0">
                 <button class="btn btn-link collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree"
                         aria-expanded="false" aria-controls="collapseThree">
-                  * Thuốc thú y là gì?
+                  * Tiền sưa tầm là gì?
                 </button>
               </h2>
             </div>
             <div id="collapseThree" class="collapse" aria-labelledby="headingThree" data-parent="#accordionExample">
               <div class="card-body">
-                Về cơ bản, thuốc thú y được hiểu là đơn chất hoặc hỗn hợp các chất, bao gồm dược phẩm, vacxin, chế phẩm sinh học, vi sinh vật, hóa chất được phê duyệt dùng cho động vật. Thuốc thú y được sử dụng với mục đích phòng bệnh, chữa bệnh, chẩn đoán bệnh, điều chỉnh, phục hồi chức năng sinh trưởng, sinh sản của động vật nói chung và vật nuôi nó riêng.
+                Tiền sưu tầm là thuật ngữ dùng để chỉ các loại tiền tệ (tiền giấy hoặc tiền xu) được thu thập với mục đích sưu tầm thay vì sử dụng trong giao dịch hàng ngày. Đây thường là các loại tiền mang ý nghĩa lịch sử, văn hóa, hoặc nghệ thuật, và có giá trị đặc biệt đối với các nhà sưu tập.
               </div>
             </div>
           </div>
@@ -60,16 +60,16 @@
               <h2 class="mb-0">
                 <button class="btn btn-link collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFive"
                         aria-expanded="false" aria-controls="collapseFive">
-                  * Vai trò của thuốc thú y trong sản xuất và chăn nuôi?
+                  * Ý nghĩa của tiền sưu tầm với người dùng
                 </button>
               </h2>
             </div>
             <div id="collapseFive" class="collapse" aria-labelledby="headingFive" data-parent="#accordionExample">
               <div class="card-body">
-                <p>+ Sản phẩm thuốc thú y có tác dụng phòng và chữa bệnh cho vật nuôi đảm bảo nguồn thực phẩm từ chăn nuôi có giá trị và chất lượng cao</p>
-                <P>+ Thuốc thú y giúp vật nuôi tăng trưởng và phát triển ổn định.</P>
-                <p>+ Nâng cao hiệu quả công tác phòng ngừa ngăn chặn dịch bệnh nhằm bảo vệ phát triển ngành chăn nuôi, cung cấp sản phẩm làm từ vật nuôi có chất lượng cao phục vụ cho tiêu dùng trong nước và xuất khẩu.</p>
-                <p>+ Ngoài ra thuốc thú y có vai trò bảo vệ con người tránh được những bệnh lây nhiễm trực tiếp từ động vật và những bệnh do thức ăn làm từ động vật gây ra.</p>
+                <p>Kết nối với quá khứ: Tiền sưu tầm là minh chứng sống động của các giai đoạn lịch sử, thể hiện các sự kiện, nhân vật, hoặc văn hóa của một quốc gia.</p>
+                <P>Tìm hiểu lịch sử: Người sưu tầm có cơ hội khám phá những câu chuyện đằng sau mỗi tờ tiền hoặc đồng xu, từ đó hiểu sâu hơn về lịch sử và văn hóa thế giới.</P>
+                <p>Tác phẩm nghệ thuật thu nhỏ: Tiền sưu tầm thường mang những họa tiết, hoa văn, và biểu tượng độc đáo, được thiết kế tỉ mỉ và sáng tạo.</p>
+                <p>Niềm tự hào: Bộ sưu tập tiền là thành quả của sự kiên trì và đam mê, mang đến niềm tự hào cho người sở hữu.</p>
                 <p></p>
               </div>
             </div>
@@ -131,8 +131,7 @@
             </div>
             <div id="collapseSix" class="collapse" aria-labelledby="headingSix" data-parent="#accordionExample">
               <div class="card-body">
-                <p><strong> Cách 1:</strong> Thanh toán chuyển khoản qua tài khoản CÔNG TY</p>
-                <p><strong> Cách 2:</strong> Thanh toán bằng tiền mặt ngay khi nhận hàng </p>
+                <p><strong> Cách 1:</strong> Thanh toán bằng tiền mặt ngay khi nhận hàng </p>
               </div>
             </div>
           </div>

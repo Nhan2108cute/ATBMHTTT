@@ -16,9 +16,77 @@
     <link rel="stylesheet" href="css/plugins.css"/>
     <link rel="stylesheet" href="css/main.css"/>
     <link rel="shortcut icon" type="image/x-icon" href="image/favicon.ico">
-    <title>Petmark ❤️</title>
+    <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;700&display=swap" rel="stylesheet">
+    <title>QNC Money</title>
+    <style>
+        .popup-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6); /* Hiệu ứng mờ */
+            z-index: 999; /* Đặt overlay bên trên mọi nội dung khác */
+            display: none; /* Ẩn overlay mặc định */
+        }
+        .popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: #fff;
+            width: 40%;
+            height: 15%;
+            padding: 20px;
+            border-radius: 10px;
+            z-index: 1000; /* Đặt popup bên trên overlay */
+            text-align: center;
+        }
+        input[type="file"]::-webkit-file-upload-button {
+            visibility: hidden; /* Ẩn nút mặc định */
+        }
+        input[type="file"]::before {
+            content: "Import";
+            display: inline-block;
+            background-color: #198754;
+            color: white;
+            padding: 0px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            text-align: center;
+        }
+        input[type="file"]:hover::before {
+            background-color: #198754;
+        }
+        .btnToCreateKey{
+            display: flex;
+            justify-content: center;
+        }
+        .btn-success{
+            width: 160px;
+        }
+
+    </style>
 </head>
 <body class="petmark-theme-2">
+<c:if test="${sessionScope.user == null}">
+
+</c:if>
+<c:if test="${sessionScope.user != null && sessionScope.keyExists}">
+
+</c:if>
+<c:if test="${sessionScope.user != null && !sessionScope.keyExists}">
+    <div class="popup-overlay"></div> <!-- Overlay nằm bên dưới popup -->
+    <div class="popup">
+        <span class="thong-tin-thanh-toan">
+            <h5>Bạn chưa tạo khoá, hãy tạo khoá để tiếp tục mua hàng</h5>
+        </span>
+        <div class="btnToCreateKey">
+            <input value="Đi đến trang tạo key" class="btn btn-success" style="float: right" onclick="navigateToKeyManagement()">
+        </div>
+    </div>
+</c:if>
 <div class="site-wrapper">
     <jsp:include page="header/header.jsp"></jsp:include>
     <section class="hero-area-two">
@@ -36,8 +104,8 @@
                             <div class="container">
                                 <div class="row">
                                     <div class="col-lg-10">
-                                        <h2><span class="text-primary">Petmark</span> cửa hàng <br> thuốc thú y</h2>
-                                        <h4 class="mt--30">Lựa chọn tốt nhất cho thú cưng của bạn</h4>
+                                        <h2><span class="text-primary">QCN Money</span> cửa hàng <br> tiền sưu tầm</h2>
+                                        <h4 class="mt--30">Lựa chọn tốt nhất dành cho người dùng thích sưu tầm tiền</h4>
                                         <div class="slider-btn mt--30">
                                             <a href="list-product" class="btn btn-outlined--white btn-rounded">
                                                 Mua ngay</a>
@@ -52,7 +120,7 @@
                             <div class="container">
                                 <div class="row">
                                     <div class="col-lg-10">
-                                        <h4>Cửa hàng thú y</h4>
+                                        <h4>Cửa hàng tiền sưu tầm</h4>
                                         <h2 class="mt--20">Đến với <br> chúng tôi</h2>
                                         <div class="slider-btn mt--30">
                                             <a href="list-product" class="btn btn-outlined--white btn-rounded">Mua ngay
@@ -131,7 +199,7 @@
                 <div class="col-lg-8 col-xl-9">
                     <div class="slider-header-block tab-header d-flex border-bottom mb--20">
                         <div class="block-title-2 mb-0 border-0">
-                            <h2>Thuốc Thú Y</h2>
+                            <h2>Tiền Kỉ Niệm</h2>
                         </div>
                         <ul class="pm-tab-nav tab-nav-style-2 nav nav-tabs" id="myTab" role="tablist">
                             <li class="nav-item">
@@ -214,7 +282,7 @@
                                         <h3><a href="detail?pID=${t.id}"> ${t.name} </a></h3>
                                         <div class="price text-orange">
 
-                                            <span>500 VND</span>
+                                            <span>${t.price}</span>
                                         </div>
                                         <div class="rating-widget mt--20">
                                             <a href="#" class="single-rating"><i class="fas fa-star"></i></a>
@@ -308,7 +376,7 @@
     </h2>
     <div class="container">
         <a class="promo-image overflow-image">
-            <img src="image/product/promo-product-image-huge--home-2.jpg" alt="">
+            <img src="" alt="">
         </a>
     </div>
 </section>
@@ -372,47 +440,18 @@
                 {"breakpoint":480, "settings": {"slidesToShow": 2} },
                 {"breakpoint":320, "settings": {"slidesToShow": 1} }
                 ]'>
-            <div class="single-slide">
-                <a href="#" class="overflow-image brand-image">
-                    <img src="image/brand/brand-1.png" alt="">
-                </a>
-            </div>
-            <div class="single-slide">
-                <a href="#" class="overflow-image brand-image">
-                    <img src="image/brand/brand-2.png" alt="">
-                </a>
-            </div>
-            <div class="single-slide">
-                <a href="#" class="overflow-image brand-image">
-                    <img src="image/brand/brand-3.png" alt="">
-                </a>
-            </div>
-            <div class="single-slide">
-                <a href="#" class="overflow-image brand-image">
-                    <img src="image/brand/brand-4.png" alt="">
-                </a>
-            </div>
-            <div class="single-slide">
-                <a href="#" class="overflow-image brand-image">
-                    <img src="image/brand/brand-5.png" alt="">
-                </a>
-            </div>
-            <div class="single-slide">
-                <a href="#" class="overflow-image brand-image">
-                    <img src="image/brand/brand-6.png" alt="">
-                </a>
-            </div>
-            <div class="single-slide">
-                <a href="#" class="overflow-image brand-image">
-                    <img src="image/brand/brand-7.png" alt="">
-                </a>
-            </div>
         </div>
     </div>
 </div>
 <!-- Modal -->
 
 <script>
+    // Hàm điều hướng đến trang profile.jsp và tab "Quản lý khóa"
+    function navigateToKeyManagement() {
+        // Chuyển hướng đến profile.jsp và thêm query string để xác định tab
+        window.location.href = 'profile.jsp';
+    }
+
     var isLoggedIn = <%= session.getAttribute("user") != null %>;
 
     function pollForDataChange() {

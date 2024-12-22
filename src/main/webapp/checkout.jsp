@@ -16,7 +16,7 @@
     <link rel="stylesheet" href="css/plugins.css" />
     <link rel="stylesheet" href="css/main.css" />
     <link rel="shortcut icon" type="image/x-icon" href="image/favicon.ico">
-    <title>Petmark ❤️</title>
+    <title>QCN Money</title>
 </head>
 <body class="">
 <div class="site-wrapper">
@@ -109,14 +109,6 @@
                                                 <div class="term-block">
                                                     <input type="checkbox" id="accept_terms2">
                                                     <label for="accept_terms2">Tôi đã đọc và chấp nhận các điều khoản & điều kiện</label>
-                                                </div>
-                                                <div id="confirmationForm">
-
-                                                        <!-- Existing code... -->
-                                                    <label for="verificationCode">Xác minh danh tính</label>
-                                                    <input type="file" id="verificationCode" name="xacminh" placeholder="" onchange="readFileContent(this)">
-                                                    <input type="text" name="fileContent" id="fileContent" readonly>
-
                                                 </div>
                                                 <button class="place-order w-100">Đặt hàng</button>
                                             </div>

@@ -78,6 +78,22 @@ CREATE TABLE `ct_hoadon`  (
                               CONSTRAINT `id_sanpham` FOREIGN KEY (`id_sanpham`) REFERENCES `sanpham` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT
 ) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8 COLLATE = utf8_unicode_ci ROW_FORMAT = Dynamic;
 
+
+DROP TABLE IF EXISTS `cart`;
+CREATE TABLE `cart` (
+                        `id` int NOT NULL AUTO_INCREMENT,
+                        `user_id` int NOT NULL,
+                        `product_id` int NOT NULL,
+                        `quantity` int NOT NULL DEFAULT 1,
+                        `price` double NOT NULL,
+                        `created_at` timestamp DEFAULT CURRENT_TIMESTAMP,
+                        PRIMARY KEY (`id`),
+                        UNIQUE (`user_id`, `product_id`),
+                        FOREIGN KEY (`user_id`) REFERENCES `nguoidung` (`id`),
+                        FOREIGN KEY (`product_id`) REFERENCES `sanpham` (`id`),
+                        CHECK (`quantity` > 0)
+) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_unicode_ci;
+
 -- ----------------------------
 -- Records of ct_hoadon
 -- ----------------------------
@@ -95,6 +111,7 @@ CREATE TABLE `hoadon`  (
                            `tongtien` double NOT NULL,
                            `pt_thanhtoan` varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
                            `ghichu` varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+                           `hash` varchar(500) NOT NULL,
                            `signature` varchar(500) NOT NULL,
                            PRIMARY KEY (`id`) USING BTREE,
                            INDEX `id_ngdung`(`id_ngdung` ASC) USING BTREE,
@@ -120,7 +137,7 @@ CREATE TABLE `loaisp`  (
 -- ----------------------------
 INSERT INTO `loaisp` VALUES (1, 'Tiền Phong Thủy');
 INSERT INTO `loaisp` VALUES (2, 'Tiền Sưu Tầm');
-INSERT INTO `loaisp` VALUES (3, 'Tiền Kỉ Niệm');
+INSERT INTO `loaisp` VALUES (3, 'Tiền Xu');
 
 -- ----------------------------
 -- Table structure for nguoidung
@@ -157,6 +174,7 @@ CREATE TABLE `public_keys`  (
                                 `user_name` varchar(100) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
                                 `key_value` text CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
                                 `created_at` timestamp NOT NULL DEFAULT current_timestamp,
+                                `end_at` timestamp NULL,
                                 `status` varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
                                 PRIMARY KEY (`id`) USING BTREE,
                                 INDEX `user_id`(`user_id` ASC) USING BTREE,
@@ -166,10 +184,10 @@ CREATE TABLE `public_keys`  (
 -- ----------------------------
 -- Records of public_keys
 -- ----------------------------
-INSERT INTO `public_keys` VALUES (6, 1, 'dat', 'MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAst4pJSyTQbxMNaUee4dhXIHz/d2+HmYbFdNHGJI6kB3mqogGeydmu+qNIpwAbI+aEHdbsgBeAGgrCWBfOWw4rDEpifQX52G6LTTfybyUlO23cnAcgSZ4hmTEMN8KeEK/s1tJeyOX1hhRiShj096VZuob92wPFJQgDKMCfd/U61o6KdPiQW0QCSsSStCYm0hGa4nzWwtd5VFlmm3LV1RvBywjUo14hxjL15EnQ62wi5R7x+DGW6wPEM0t8NIOdLnaJVzJTumqYGciioYz3JJgblxXmGl9uXM+vlPAA0td37MLIOgOe3PWNdvOT2qHYlGM46AJUtJnfc6uLcsxMLUnKwIDAQAB', '2023-12-27 13:13:58', 'Xac thuc');
-INSERT INTO `public_keys` VALUES (7, 2, 'chieu', 'MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAw+IJgoMD57WDAN4JaDXPkS4ZKSKvX3XvGochdsWDzk6w4TCRDo+1hmoNxQtoP2Xzg448REe3lvY94F9ZtI1tvsGaLuKmPyRUJfG4dRW3K3LEC9gafQNR7K3EJiSCscRtRJ50tj1sCkxbbIL3LX3wb1hJzCjQWZpbrh6uNymV075YxpcJamhy8TmjPSmxiPhBdr1vLxnyojgSQ+pzro4mj51muuFyMjrBQ4evVSf2pKuQX9cDbR9gZLr8DIbmd3pkrHZTS+fTyQxomrjJqvroFzdBJSP4festWDS6oQd890KuQCVw+2CLUOfdzaTSSgAi0PpKBKi5DYPHb6ko2eEENwIDAQAB', '2023-12-27 13:13:58', 'Xac thuc');
-INSERT INTO `public_keys` VALUES (8, 3, 'ctd', 'MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAk0vz2Xa5dmPwv6yOkDJe1ixdurFO0qxxzE4kH5W9lPikDwYx5jaqVzKA/zZ9P8juWE5lnivIGrLdVXXUHQAAQ0SOdFWeU9D8fS4YSnVgAUlCPxlnaDEfLuyr8YmCILniaYvY0PkLHzSnHLwegHyy+mv8+L6VSK0BF8nI4YRGTWBQgXPaZ6TyBS8AG2Ta3b9+bxsKTUJHnOTblpHpUR3Y+4pR5eHd4+iqbo2MdQyDSPbWiTdxD2AkXdFXs2+zvY037ym4EASxlWeTRsKH3+z/rtBMlOwT/nhp9ff42n04n+PhmWRSs0TD0ZuUjNB47HjHfFqShAS2R3Z+I9Fw9CuaaQIDAQAB', '2023-12-27 13:13:58', 'Xac thuc');
-INSERT INTO `public_keys` VALUES (9, 4, 'demo', 'MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA8dVPq6VKxB6zlKQtdwKsR1JU/F4aV+6kfD6vnlxpJsfEjqVcAdZStFPvr024hom231YIMCSSKPASGqT/iCg/+HEmAgHTeHgZqBcar9yFdSkzrCl5TdJ+9jfZR97xCn0PE9K8rpxmHDIrxRQftHv4kIe+rgryLIJpHoZvJcUfIcUT4HcaV8tVGUGmWdSecaJQISL9eqLDJXXUZtgU7GO2ayeMHCa4plBmZhZBnLXnCpQqj9uDwpk1QlX8FpEqSJJ2Z2CBfcUYyL1HUGiTcHd1Fh4EurxUrLGCBzNv2JGiqfZd5swrps7DOG3AY+aHjlpSKtr18lOY+bELVRfh2SR5GQIDAQAB', '2023-12-27 13:13:59', 'Xac thuc');
+INSERT INTO `public_keys` VALUES (6, 1, 'dat', 'MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAst4pJSyTQbxMNaUee4dhXIHz/d2+HmYbFdNHGJI6kB3mqogGeydmu+qNIpwAbI+aEHdbsgBeAGgrCWBfOWw4rDEpifQX52G6LTTfybyUlO23cnAcgSZ4hmTEMN8KeEK/s1tJeyOX1hhRiShj096VZuob92wPFJQgDKMCfd/U61o6KdPiQW0QCSsSStCYm0hGa4nzWwtd5VFlmm3LV1RvBywjUo14hxjL15EnQ62wi5R7x+DGW6wPEM0t8NIOdLnaJVzJTumqYGciioYz3JJgblxXmGl9uXM+vlPAA0td37MLIOgOe3PWNdvOT2qHYlGM46AJUtJnfc6uLcsxMLUnKwIDAQAB', '2023-12-27 13:13:58', '0000-00-00 00:00:00','Xac thuc');
+INSERT INTO `public_keys` VALUES (7, 2, 'chieu', 'MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAw+IJgoMD57WDAN4JaDXPkS4ZKSKvX3XvGochdsWDzk6w4TCRDo+1hmoNxQtoP2Xzg448REe3lvY94F9ZtI1tvsGaLuKmPyRUJfG4dRW3K3LEC9gafQNR7K3EJiSCscRtRJ50tj1sCkxbbIL3LX3wb1hJzCjQWZpbrh6uNymV075YxpcJamhy8TmjPSmxiPhBdr1vLxnyojgSQ+pzro4mj51muuFyMjrBQ4evVSf2pKuQX9cDbR9gZLr8DIbmd3pkrHZTS+fTyQxomrjJqvroFzdBJSP4festWDS6oQd890KuQCVw+2CLUOfdzaTSSgAi0PpKBKi5DYPHb6ko2eEENwIDAQAB', '2023-12-27 13:13:58', '0000-00-00 00:00:00','Xac thuc');
+INSERT INTO `public_keys` VALUES (8, 3, 'ctd', 'MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAk0vz2Xa5dmPwv6yOkDJe1ixdurFO0qxxzE4kH5W9lPikDwYx5jaqVzKA/zZ9P8juWE5lnivIGrLdVXXUHQAAQ0SOdFWeU9D8fS4YSnVgAUlCPxlnaDEfLuyr8YmCILniaYvY0PkLHzSnHLwegHyy+mv8+L6VSK0BF8nI4YRGTWBQgXPaZ6TyBS8AG2Ta3b9+bxsKTUJHnOTblpHpUR3Y+4pR5eHd4+iqbo2MdQyDSPbWiTdxD2AkXdFXs2+zvY037ym4EASxlWeTRsKH3+z/rtBMlOwT/nhp9ff42n04n+PhmWRSs0TD0ZuUjNB47HjHfFqShAS2R3Z+I9Fw9CuaaQIDAQAB', '2023-12-27 13:13:58', '0000-00-00 00:00:00','Xac thuc');
+INSERT INTO `public_keys` VALUES (9, 4, 'demo', 'MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA8dVPq6VKxB6zlKQtdwKsR1JU/F4aV+6kfD6vnlxpJsfEjqVcAdZStFPvr024hom231YIMCSSKPASGqT/iCg/+HEmAgHTeHgZqBcar9yFdSkzrCl5TdJ+9jfZR97xCn0PE9K8rpxmHDIrxRQftHv4kIe+rgryLIJpHoZvJcUfIcUT4HcaV8tVGUGmWdSecaJQISL9eqLDJXXUZtgU7GO2ayeMHCa4plBmZhZBnLXnCpQqj9uDwpk1QlX8FpEqSJJ2Z2CBfcUYyL1HUGiTcHd1Fh4EurxUrLGCBzNv2JGiqfZd5swrps7DOG3AY+aHjlpSKtr18lOY+bELVRfh2SR5GQIDAQAB', '2023-12-27 13:13:59', '0000-00-00 00:00:00','Xac thuc');
 
 -- ----------------------------
 -- Table structure for sanpham
@@ -196,11 +214,14 @@ INSERT INTO `sanpham` VALUES (1, 'TIỀN CON GÀ KAMBERRA 2017', 'Tiền con gà
 Giống như mỗi năm Tết đến, mỗi con giáp sẽ được phát hành tiền hình con linh vật đó. Hình ảnh chú gà trống trên mặt trước tờ tiền là hình ảnh thật, riêng chú gà mặt sau được các họa sĩ vẽ nên cùng vòng kim can 12 con giáp tương ứng với mỗi năm.
 
 Để đáp ứng nhu cầu tiền lì xì may mắn mỗi năm. Tiền con gà luôn trong tình trạng cháy hàng do số lượng có hạn, shop sẽ đáp ứng đầy đủ cho khách hàng những sản phẩm tốt nhất ', 'img_1/2.jpg', 120000, 0, 1);
-INSERT INTO `sanpham` VALUES (2, 'TIỀN CON CHÓ KAMBERRA 2018', 'Cứ mỗi dịp sang năm mới, các nước lại tranh nhau phát hành tiền mới từ loại lưu hành cho đến loại kỷ niệm và Kamberra (Canberra - một thành phố của Úc) cũng phát hành định kì mỗi năm một lần. Nhân dịp sắp bước sang năm 2018, Kamberra đã cho ra đời tiền con chó kỷ niệm năm mới 2018, lấy hình tượng con chó trong 12 con giáp làm chủ đề của tiền.
+INSERT INTO `sanpham` VALUES
+    (2, 'TIỀN CON HEO KAMBERRA 2019',
+     'Cứ mỗi dịp sang năm mới, các nước lại tranh nhau phát hành tiền mới từ loại lưu hành cho đến loại kỷ niệm và Kamberra (Canberra - một thành phố của Úc) cũng phát hành định kì mỗi năm một lần. Nhân dịp sắp bước sang năm 2019, Kamberra đã cho ra đời tiền con heo kỷ niệm năm mới 2019, lấy hình tượng con heo trong 12 con giáp làm chủ đề của tiền.
 
-Tiền con chó Kamberra có chất liệu polymer, màu sắc sặc sỡ, vẫn sử dụng mệnh giá 50 như những tờ phát hành trước đó như cọp, thỏ, rồng, rắn, ngựa, dê, khỉ, gà... ứng với những con giáp trong văn hóa Á Đông. Vẻ ngoài bắt mắt cùng với chú chó (sói) dễ thương chắc chắn sẽ khiến bạn không thể nán lại để sở hữu, tiền cũng là vật phẩm mang ý nghĩa phong thủy thích hợp làm quà tặng cho bạn bè, người thân của bạn.
+     Tiền con heo Kamberra có chất liệu polymer, màu sắc sặc sỡ, vẫn sử dụng mệnh giá 50 như những tờ phát hành trước đó như cọp, thỏ, rồng, rắn, ngựa, dê, khỉ, gà... ứng với những con giáp trong văn hóa Á Đông. Vẻ ngoài bắt mắt cùng với chú heo dễ thương chắc chắn sẽ khiến bạn không thể nán lại để sở hữu, tiền cũng là vật phẩm mang ý nghĩa phong thủy thích hợp làm quà tặng cho bạn bè, người thân của bạn.
 
-Tiền lì xì 2018 có vẻ khá phong phú về chủng loại, bạn có thể thêm các sản phẩm tiền hình con chó khác như Tiền con chó Belarus, tiền con chó Lithuania', 'img_1/2.jpg', 120000, 0, 1);
+     Tiền lì xì 2019 có vẻ khá phong phú về chủng loại, bạn có thể thêm các sản phẩm tiền hình con heo khác như Tiền con heo Belarus, tiền con heo Lithuania.',
+     'img_1/1.jpg', 120000, 0, 1);
 INSERT INTO `sanpham` VALUES (3, 'TIỀN CON CHÓ KAMBERRA 2018', 'Cứ mỗi dịp sang năm mới, các nước lại tranh nhau phát hành tiền mới từ loại lưu hành cho đến loại kỷ niệm và Kamberra (Canberra - một thành phố của Úc) cũng phát hành định kì mỗi năm một lần. Nhân dịp sắp bước sang năm 2018, Kamberra đã cho ra đời tiền con chó kỷ niệm năm mới 2018, lấy hình tượng con chó trong 12 con giáp làm chủ đề của tiền.
 
 Tiền con chó Kamberra có chất liệu polymer, màu sắc sặc sỡ, vẫn sử dụng mệnh giá 50 như những tờ phát hành trước đó như cọp, thỏ, rồng, rắn, ngựa, dê, khỉ, gà... ứng với những con giáp trong văn hóa Á Đông. Vẻ ngoài bắt mắt cùng với chú chó (sói) dễ thương chắc chắn sẽ khiến bạn không thể nán lại để sở hữu, tiền cũng là vật phẩm mang ý nghĩa phong thủy thích hợp làm quà tặng cho bạn bè, người thân của bạn.
@@ -268,16 +289,16 @@ INSERT INTO `sanpham` VALUES (27, '150000 RIELS CAMBODIA 2019 KỶ NIỆM 15 LÊ
 INSERT INTO `sanpham` VALUES (28, 'TIỀN KỶ NIỆM NHÀ DU HÀNH VŨ TRỤ LEONID KADENYUK', 'TIỀN KỶ NIỆM NHÀ DU HÀNH VŨ TRỤ LEONID KADENYUK', 'img_1/28.jpg', 250000, 0, 2);
 INSERT INTO `sanpham` VALUES (29, '100 KARBOVANTSIV UKRAINE 2017 KỶ NIỆM TỜ TIỀN ĐẦU TIÊN THỜI LẬP QUỐC', '100 KARBOVANTSIV UKRAINE 2017 KỶ NIỆM TỜ TIỀN ĐẦU TIÊN THỜI LẬP QUỐC', 'img_1/29.jpg', 250000, 0, 2);
 INSERT INTO `sanpham` VALUES (30, '100 HRYVEN UKRAINE 2018 KỶ NIỆM THAY ĐỔI ĐƠN VỊ TIỀN TỆ', '100 HRYVEN UKRAINE 2018 KỶ NIỆM THAY ĐỔI ĐƠN VỊ TIỀN TỆ', 'img_1/30.jpg', 250000, 0, 2);
-INSERT INTO `sanpham` VALUES (31, '1 YEN NHẬT 1948 – 1950', '1 YEN NHẬT 1948 – 1950', 'img_1/31.1.jpg', 30000, 0, 4);
-INSERT INTO `sanpham` VALUES (32, '50 SEN NHẬT 1947 – 1948', '50 SEN NHẬT 1947 – 1948', 'img_1/32.1.jpg', 30000, 0, 4);
-INSERT INTO `sanpham` VALUES (33, '50 SEN NHẬT 1946 – 1947', '50 SEN NHẬT 1946 – 1947', 'img_1/33.1.jpg', 80000, 0, 4);
-INSERT INTO `sanpham` VALUES (34, '5 SEN NHẬT 1944 – 1945', '5 SEN NHẬT 1944 – 1945', 'img_1/34.1.jpg', 50000, 0, 4);
-INSERT INTO `sanpham` VALUES (35, '10 SEN NHẬT 1944', '10 SEN NHẬT 1944', 'img_1/35.1.jpg', 60000, 0, 4);
-INSERT INTO `sanpham` VALUES (36, 'XU 1 FARTHING GEORGE V 1911 – 1936', 'XU 1 FARTHING GEORGE V 1911 – 1936', 'img_1/36.1.jpg', 120000, 0, 4);
-INSERT INTO `sanpham` VALUES (37, 'XU 3 PENCE ELIZABETH II 1953 – 1963', 'XU 3 PENCE ELIZABETH II 1953 – 1963', 'img_1/37.1.jpg', 50000, 0, 4);
-INSERT INTO `sanpham` VALUES (38, 'XU 6 PENCE GEORGE VII 1949 – 1952', 'XU 6 PENCE GEORGE VII 1949 – 1952', 'img_1/38.1.jpg', 50000, 0, 4);
-INSERT INTO `sanpham` VALUES (39, 'XU 6 PENCE GEORGE VII 1947 – 1948', 'XU 6 PENCE GEORGE VII 1947 – 1948', 'img_1/39.1.jpg', 50000, 0, 4);
-INSERT INTO `sanpham` VALUES (40, 'XU HALF PENNY GEORGE VI 1937 – 1952', 'Xu con tàu vua George VI có ý nghĩa như Thuận buồm xuôi gió, rất thich hợp để làm phong thủy. Xu được phát hành lúc vua George tại ngôi từ năm 1937 đến 1952.', 'img_1/40.1.jpg', 100000, 0, 4);
+INSERT INTO `sanpham` VALUES (31, '1 YEN NHẬT 1948 – 1950', '1 YEN NHẬT 1948 – 1950', 'img_1/31.1.jpg', 30000, 0, 3);
+INSERT INTO `sanpham` VALUES (32, '50 SEN NHẬT 1947 – 1948', '50 SEN NHẬT 1947 – 1948', 'img_1/32.1.jpg', 30000, 0, 3);
+INSERT INTO `sanpham` VALUES (33, '50 SEN NHẬT 1946 – 1947', '50 SEN NHẬT 1946 – 1947', 'img_1/33.1.jpg', 80000, 0, 3);
+INSERT INTO `sanpham` VALUES (34, '5 SEN NHẬT 1944 – 1945', '5 SEN NHẬT 1944 – 1945', 'img_1/34.1.jpg', 50000, 0, 3);
+INSERT INTO `sanpham` VALUES (35, '10 SEN NHẬT 1944', '10 SEN NHẬT 1944', 'img_1/35.1.jpg', 60000, 0, 3);
+INSERT INTO `sanpham` VALUES (36, 'XU 1 FARTHING GEORGE V 1911 – 1936', 'XU 1 FARTHING GEORGE V 1911 – 1936', 'img_1/36.1.jpg', 120000, 0, 3);
+INSERT INTO `sanpham` VALUES (37, 'XU 3 PENCE ELIZABETH II 1953 – 1963', 'XU 3 PENCE ELIZABETH II 1953 – 1963', 'img_1/37.1.jpg', 50000, 0, 3);
+INSERT INTO `sanpham` VALUES (38, 'XU 6 PENCE GEORGE VII 1949 – 1952', 'XU 6 PENCE GEORGE VII 1949 – 1952', 'img_1/38.1.jpg', 50000, 0, 3);
+INSERT INTO `sanpham` VALUES (39, 'XU 6 PENCE GEORGE VII 1947 – 1948', 'XU 6 PENCE GEORGE VII 1947 – 1948', 'img_1/39.1.jpg', 50000, 0, 3);
+INSERT INTO `sanpham` VALUES (40, 'XU HALF PENNY GEORGE VI 1937 – 1952', 'Xu con tàu vua George VI có ý nghĩa như Thuận buồm xuôi gió, rất thich hợp để làm phong thủy. Xu được phát hành lúc vua George tại ngôi từ năm 1937 đến 1952.', 'img_1/40.1.jpg', 100000, 0, 3);
 
 -- ----------------------------
 -- Table structure for tintuc
