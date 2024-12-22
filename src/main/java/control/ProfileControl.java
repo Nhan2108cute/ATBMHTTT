@@ -4,6 +4,7 @@ import dao.BillDAO;
 import dao.DAO;
 import entity.Bill;
 import entity.User;
+import services.EmailService;
 
 import javax.servlet.*;
 import javax.servlet.http.*;
@@ -24,17 +25,23 @@ public class ProfileControl extends HttpServlet {
             BillDAO billDAO = new BillDAO();
             List<Bill> billList = billDAO.getBillDetails(userId);
 
-            // Lưu danh sách hóa đơn vào session
+            // Kiểm tra thay đổi hóa đơn
+            List<Bill> previousBillList = (List<Bill>) session1.getAttribute("userBills");
+            if (previousBillList != null && !billList.equals(previousBillList)) {
+                // Gửi email thông báo thay đổi hóa đơn
+                sendBillChangeNotification(user, billList);
+            }
+
+            // Lưu danh sách hóa đơn mới vào session
             session1.setAttribute("userBills", billList);
         }
         HttpSession session = request.getSession();
         Object o = session.getAttribute("user");
-        if(o == null) {
+        if (o == null) {
             response.sendRedirect("login");
         } else {
             request.getRequestDispatcher("profile.jsp").forward(request, response);
         }
-
     }
 
     @Override
@@ -53,7 +60,31 @@ public class ProfileControl extends HttpServlet {
         DAO dao = new DAO();
         dao.changeProfile(fullname, email, username, phone, address, u.getId());
         request.setAttribute("mess", "thanh cong");
-        request.getRequestDispatcher("profile.jsp");
+        request.getRequestDispatcher("profile.jsp").forward(request, response);
+    }
 
+    private void sendBillChangeNotification(User user, List<Bill> updatedBills) {
+        String recipientEmail = user.getEmail();
+        String subject = "Thông báo thay đổi hóa đơn";
+        StringBuilder body = new StringBuilder();
+        body.append("Xin chào ").append(user.getFullName()).append(",\n\n");
+        body.append("Hóa đơn của bạn đã có sự thay đổi. Vui lòng kiểm tra thông tin chi tiết như sau:\n\n");
+
+        for (Bill bill : updatedBills) {
+            body.append("Mã hoá đỡn: ").append(bill.getId()).append("\n")
+                    .append("Thời gian đặt hàng: ").append(bill.getNgayLap_hoaDon()).append("\n")
+                    .append("Lần cuối thay đổi: ").append(bill.getLancuoithaydoi_hoaDon()).append("\n")
+                    .append("Tên người nhận: ").append(bill.getTen()).append("\n")
+                    .append("Địa chỉ: ").append(bill.getDiachi()).append("\n")
+                    .append("Tổng tiền: ").append(bill.getTongTien()).append("\n")
+                    .append("Ghi chú: ").append(bill.getGhiChu()).append("\n")
+                    .append("Trạng thái: ").append(bill.getStatus()).append("\n\n");
+        }
+
+        body.append("Vui lòng đăng nhập vào hệ thống để kiểm tra thêm thông tin chi tiết.\n");
+        body.append("Trân trọng.");
+
+        EmailService emailService = new EmailService();
+        emailService.sendEmail(recipientEmail, subject, body.toString());
     }
 }

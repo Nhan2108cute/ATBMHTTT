@@ -220,6 +220,13 @@ public class BillDAO {
                         "WHERE h.status = 'Da xac thuc' " +
                         "ORDER BY h.ngaylap_hd DESC";
 
+        String canceledBillsQuery =
+                "SELECT h.*, n.hoten " +
+                        "FROM hoadon h " +
+                        "JOIN nguoidung n ON h.id_ngdung = n.id " +
+                        "WHERE h.status = 'Huy' " +
+                        "ORDER BY h.ngaylap_hd DESC";
+
         // Query đơn hàng chưa xác thực
         String unverifiedBillsQuery =
                 "SELECT h.*, n.hoten, pk.status as key_status, pk.created_at as key_created, " +
@@ -249,11 +256,19 @@ public class BillDAO {
                 }
             }
 
+            try (PreparedStatement ps = conn.prepareStatement(canceledBillsQuery)) {
+                ResultSet rs = ps.executeQuery();
+                while(rs.next()) {
+                    Bill bill = createBill(rs);
+                    list.add(bill);
+                }
+            }
+
             // Xử lý đơn hàng chưa xác thực
             try (PreparedStatement ps = conn.prepareStatement(unverifiedBillsQuery)) {
                 ResultSet rs = ps.executeQuery();
                 while (rs.next()) {
-                    Bill bill = createUnverifiedBill(rs);
+                    Bill bill = createBill(rs);
 
                     String keyStatus = rs.getString("key_status");
                     Timestamp keyCreated = rs.getTimestamp("key_created");
@@ -265,20 +280,12 @@ public class BillDAO {
                     if (signature != null && !signature.isEmpty() && publicKey != null) {
                         if ("Xac thuc".equals(keyStatus) && keyEndAt == null) {
                             if (verifySignature(bill.getHash(), publicKey, signature)) {
-                                bill.setStatus("Da xac thuc");
-                                updateBillStatus(bill.getId(), "Da xac thuc");
-                            } else {
-                                bill.setStatus("Chua xac thuc");
-                                updateBillStatus(bill.getId(), "Chua xac thuc");
+                                if (bill.getStatus() == "Chua xac thuc") {
+                                    bill.setStatus("Da xac thuc");
+                                    updateBillStatus(bill.getId(), "Da xac thuc");
+                                }
                             }
-                        } else {
-                            // Nếu key đã mất , đơn hàng ở trạng thái chưa xác thực
-                            bill.setStatus("Chua xac thuc");
-                            updateBillStatus(bill.getId(), "Chua xac thuc");
                         }
-                    } else {
-                        bill.setStatus("Chua xac thuc");
-                        updateBillStatus(bill.getId(), "Chua xac thuc");
                     }
 
                     list.add(bill);
@@ -301,7 +308,6 @@ public class BillDAO {
         bill.setGhiChu(rs.getString("ghichu"));
         bill.setHash(rs.getString("hash"));
         bill.setSignature(rs.getString("signature"));
-        bill.setStatus("Da xac thuc");
 
         User nguoiDung = new User();
         nguoiDung.setId(rs.getString("id_ngdung"));

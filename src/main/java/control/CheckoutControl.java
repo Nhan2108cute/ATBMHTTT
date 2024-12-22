@@ -4,12 +4,15 @@ import dao.BillDAO;
 import dao.CartDAO;
 import dao.DAO;
 import entity.*;
+import services.EmailService;
+
 import javax.servlet.*;
 import javax.servlet.http.*;
 import javax.servlet.annotation.*;
 import java.io.IOException;
 import java.sql.Timestamp;
 import java.util.*;
+
 import static entity.ElectronicSignatureVerification.*;
 
 @WebServlet(name = "CheckoutControl", value = "/CheckoutControl")
@@ -61,7 +64,7 @@ public class CheckoutControl extends HttpServlet {
                 String hashValue = SHA.hash(data);
 
                 // Lưu Bill vào database với trường hash
-                Bill bill = new Bill(0, user, ten, new Timestamp(date.getTime()), new Timestamp(date.getTime()),dia_chi_giao_hang, pt_thanhtoan, ghichu, total + shippingFee, hashValue, "","Chua xac thuc");
+                Bill bill = new Bill(0, user, ten, new Timestamp(date.getTime()), new Timestamp(date.getTime()), dia_chi_giao_hang, pt_thanhtoan, ghichu, total + shippingFee, hashValue, "", "Chua xac thuc");
                 int idBill = billDAO.addBill(bill);
 
                 // Lưu chi tiết đơn hàng
@@ -70,6 +73,9 @@ public class CheckoutControl extends HttpServlet {
                     int soLuong = entry.getValue();
                     billDAO.addBillDetails(new BillDetails(idBill, product, soLuong, product.getPrice()));
                 }
+
+                // Gửi email thông báo đặt hàng thành công
+                sendOrderConfirmationEmail(user, bill, map);
 
                 // Xóa giỏ hàng sau khi đặt hàng thành công
                 list.clear();
@@ -87,5 +93,34 @@ public class CheckoutControl extends HttpServlet {
             RequestDispatcher dispatcher = request.getRequestDispatcher("/checkout.jsp");
             dispatcher.forward(request, response);
         }
+    }
+
+    private void sendOrderConfirmationEmail(User user, Bill bill, HashMap<Product, Integer> productMap) {
+        String recipientEmail = user.getEmail();
+        String subject = "Xác nhận đặt hàng thành công";
+        StringBuilder body = new StringBuilder();
+
+        body.append("Xin chào ").append(user.getFullName()).append(",\n\n");
+        body.append("Bạn đã đặt hàng thành công với các thông tin như sau:\n");
+        body.append("Mã hóa đơn: ").append(bill.getId()).append("\n");
+        body.append("Tên người nhận: ").append(bill.getTen()).append("\n");
+        body.append("Địa chỉ giao hàng: ").append(bill.getDiachi()).append("\n");
+        body.append("Phương thức thanh toán: ").append(bill.getPt_thanhToan()).append("\n");
+        body.append("Ghi chú: ").append(bill.getGhiChu()).append("\n");
+        body.append("Tổng tiền: ").append(bill.getTongTien()).append(" VNĐ\n");
+        body.append("\nChi tiết đơn hàng:\n");
+
+        for (Map.Entry<Product, Integer> entry : productMap.entrySet()) {
+            Product product = entry.getKey();
+            int quantity = entry.getValue();
+            body.append("- ").append(product.getName()).append(": ").append(quantity).append(" x ").append(product.getPrice()).append(" VNĐ\n");
+        }
+
+        body.append("\nCảm ơn bạn đã mua sắm tại cửa hàng của chúng tôi!\n");
+        body.append("Trân trọng.");
+
+        // Gửi email
+        EmailService emailService = new EmailService();
+        emailService.sendEmail(recipientEmail, subject, body.toString());
     }
 }

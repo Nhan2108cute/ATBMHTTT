@@ -99,6 +99,7 @@
                                             <table class="table table-bordered">
                                                 <thead class="thead-light">
                                                 <tr>
+                                                    <th>Mã hoá đơn</th>
                                                     <th>Ngày đặt hàng</th>
                                                     <th>Thay đổi lần cuối</th>
                                                     <th>Tên người nhận</th>
@@ -114,6 +115,7 @@
                                                 <tbody>
                                                 <c:forEach var="bill" items="${sessionScope.userBills}" varStatus="ss">
                                                     <tr>
+                                                        <td>${bill.id}</td>
                                                         <td>${bill.ngayLap_hoaDon}</td>
                                                         <td>${bill.lancuoithaydoi_hoaDon}</td>
                                                         <td>${bill.ten}</td>
