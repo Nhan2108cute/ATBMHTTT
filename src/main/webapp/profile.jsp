@@ -100,7 +100,8 @@
                                                 <thead class="thead-light">
                                                 <tr>
                                                     <th>Ngày đặt hàng</th>
-                                                    <th>Tên mặt hàng</th>
+                                                    <th>Thay đổi lần cuối</th>
+                                                    <th>Tên người nhận</th>
                                                     <th>Địa chỉ</th>
                                                     <th>Tổng tiền</th>
                                                     <th>Ghi chú</th>
@@ -114,6 +115,7 @@
                                                 <c:forEach var="bill" items="${sessionScope.userBills}" varStatus="ss">
                                                     <tr>
                                                         <td>${bill.ngayLap_hoaDon}</td>
+                                                        <td>${bill.lancuoithaydoi_hoaDon}</td>
                                                         <td>${bill.ten}</td>
                                                         <td>${bill.diachi}</td>
                                                         <td>${bill.tongTien} VNĐ</td>

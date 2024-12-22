@@ -27,7 +27,7 @@ public class BillDAO {
         int generatedId = -1;
 
 
-        String query = "INSERT INTO hoadon (ngaylap_hd, id_ngdung, ten, dia_chi_giao_hang, tongtien, pt_thanhtoan, ghichu, hash, signature,status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        String query = "INSERT INTO hoadon (ngaylap_hd, id_ngdung, ten, dia_chi_giao_hang, tongtien, pt_thanhtoan, ghichu, hash, signature,status, lancuoithaydoi_hd) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         try {
             conn = new DBConnect().getConnection();
@@ -44,6 +44,7 @@ public class BillDAO {
             ps.setString(8, bill.getHash());
             ps.setString(9, ""); // Signature để trống
             ps.setString(10, bill.getStatus());
+            ps.setTimestamp(11, bill.getLancuoithaydoi_hoaDon());
 
 
 
@@ -124,7 +125,7 @@ public class BillDAO {
     public List<Bill> getBillDetails(String userId) {
         List<Bill> billList = new ArrayList<>();
         String query = "SELECT hd.id AS hoadon_id, hd.ten, hd.dia_chi_giao_hang, hd.ngaylap_hd, " +
-                "hd.tongtien, hd.ghichu, hd.hash, hd.signature, hd.status " + // Thêm hd.signature
+                "hd.tongtien, hd.ghichu, hd.hash, hd.signature, hd.status, hd.lancuoithaydoi_hd " + // Thêm hd.signature
                 "FROM hoadon hd " +
                 "WHERE hd.id_ngdung = ?";
 
@@ -144,6 +145,7 @@ public class BillDAO {
                     bill.setHash(rs.getString("hash"));
                     bill.setSignature(rs.getString("signature")); // Gán giá trị signature
                     bill.setStatus(rs.getString("status"));
+                    bill.setLancuoithaydoi_hoaDon(rs.getTimestamp("lancuoithaydoi_hd"));
                     billList.add(bill);
                 }
             }
