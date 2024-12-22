@@ -15,6 +15,7 @@ public class Bill {
     private String hash;
     private String status;
 
+
     public Bill(int id, User nguoiDung, String ten, Timestamp ngayLap_hoaDon, String diachi, String pt_thanhToan, String ghiChu, double tongTien, String hash, String signature,String status) {
 
         this.id = id;

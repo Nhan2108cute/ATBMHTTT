@@ -145,21 +145,20 @@ public class CreateKeyDAO {
     }
 
     // Báo mất key
-    public Timestamp reportLostKey(int userId) {
+    public Timestamp reportLostKey(Timestamp endTime ,int userId) {
         Connection connection = null;
         PreparedStatement ps = null;
-        Timestamp lostTime = new Timestamp(System.currentTimeMillis());
 
         try {
             connection = new DBConnect().getConnection();
             String updateCurrentKey = "UPDATE public_keys SET end_at = ?, status = 'Mat' " +
                     "WHERE user_id = ? AND status = 'Xac thuc' AND end_at IS NULL";
             ps = connection.prepareStatement(updateCurrentKey);
-            ps.setTimestamp(1, lostTime);
+            ps.setTimestamp(1, endTime);
             ps.setInt(2, userId);
             ps.executeUpdate();
 
-            return lostTime;
+            return endTime;
         } catch (Exception e) {
             e.printStackTrace();
             return null;
@@ -170,6 +169,19 @@ public class CreateKeyDAO {
             } catch (Exception e) {
                 e.printStackTrace();
             }
+        }
+    }
+
+    public void cancelOrdersAfterLostKey(int userId, Timestamp reportTime) {
+        try (Connection conn = new DBConnect().getConnection()) {
+            String sql = "UPDATE hoadon SET status = 'Huy' WHERE id_ngdung = ? AND ngaylap_hd > ?";
+            try (PreparedStatement ps = conn.prepareStatement(sql)) {
+                ps.setInt(1, userId);
+                ps.setTimestamp(2, reportTime);
+                ps.executeUpdate();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 }

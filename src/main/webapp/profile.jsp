@@ -15,126 +15,10 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <link rel="stylesheet" href="css/plugins.css"/>
     <link rel="stylesheet" href="css/main.css"/>
+    <link rel="stylesheet" href="css/popup.css"/>
     <link rel="shortcut icon" type="image/x-icon" href="image/favicon.ico">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.0/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-    <style>
-        .popup {
-            position: fixed;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.6);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-        }
-        .popup-content {
-            position: relative;
-            background: #fff;
-            width: 75%;
-            height: 55%;
-            padding: 20px;
-            border-radius: 10px;
-            text-align: left;
-        }
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f4f4f9;
-        }
-        .randomGenerateKey {
-            display: flex;
-            align-items: center;
-        }
-
-        .keys {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 12px;
-            margin-bottom: 12px;
-        }
-
-        .key-section {
-            flex: 1;
-            margin-right: 10px;
-        }
-
-        .key-section h3 {
-            margin: 0 0 5px;
-        }
-
-        textarea {
-            width: 100%;
-            height: 150px;
-            resize: none;
-            padding: 10px;
-            font-family: monospace;
-            font-size: 12px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-        }
-        .import-export-key {
-            justify-content: center;
-            display: flex;
-        }
-
-        .btn-group {
-            display: flex;
-            justify-content: space-around;
-            margin-top: 10px;
-        }
-
-        .btn-group button, .actions button {
-            padding: 8px 12px;
-            font-size: 14px;
-            border: none;
-            cursor: pointer;
-            background-color: #007BFF;
-            color: #fff;
-            border-radius: 4px;
-            transition: background-color 0.3s;
-        }
-
-        .btn-group button:hover, .actions button:hover {
-            background-color: #0056b3;
-        }
-
-        .actions {
-            display: flex;
-            justify-content: space-around;
-            margin-top: 20px;
-        }
-
-        input.import{
-            margin-top: 5px;
-        }
-        input.export{
-            margin-top: 5px;
-        }
-        input[type="file"]::-webkit-file-upload-button {
-            visibility: hidden; /* Ẩn nút mặc định */
-        }
-
-        input[type="file"]::before {
-            content: "Import";
-            display: inline-block;
-            background-color: #198754;
-            color: white;
-            padding: 0px 12px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 14px;
-            text-align: center;
-        }
-
-        input[type="file"]:hover::before {
-            background-color: #198754;
-        }
-
-    </style>
     <title>Tài Khoản</title>
 </head>
 <body class="">
@@ -356,16 +240,14 @@
                                         <hr class="my-4">
 
                                         <!-- Form yêu cầu đưa key về trạng thái không chấp nhận xác thực mới -->
-                                        <form action="#" method="post" id="revokeKeyForm">
+                                        <div action="#" method="post">
                                             <div class="row justify-content-center mt-3">
                                                 <div class="col-12 col-md-6 text-center">
                                                     <p class="text-danger">Đưa key về trạng thái bị vô hiệu hoá</p>
-                                                    <button id="revokeKeyBtn" class="btn btn-danger" type="submit">Yêu
-                                                        cầu
-                                                    </button>
+                                                    <button id="revokeKeyBtn" class="btn btn-danger">Yêu cầu</button>
                                                 </div>
                                             </div>
-                                        </form>
+                                        </div>
 
                                         <hr class="my-4">
 
@@ -373,13 +255,12 @@
                                         <div action="#" method="post">
                                             <div class="row justify-content-center mt-3">
                                                 <div class="col-12 col-md-6 text-center">
-                                                    <p class="text-danger">Nếu khách hàng chưa có key, hãy nhấn tạo key
-                                                        mới</p>
-                                                    <button id="genKeyBtn" class="btn btn-success">Tạo key mới
-                                                    </button>
+                                                    <p class="text-danger">Nếu khách hàng chưa có key, hãy nhấn tạo key mới</p>
+                                                    <button id="genKeyBtn" class="btn btn-success">Tạo key mới</button>
                                                 </div>
                                             </div>
                                         </div>
+
                                     </div>
                                 </div>
 
@@ -394,13 +275,38 @@
         </div>
     </div>
 </div>
+<div class="reportPopup">
+    <div class="reportPopup-content">
+        <div class="row">
+            <div class="form-group  col-md-12">
+                <span class="thong-tin-thanh-toan">
+                    <h5>Báo cáo mất key</h5>
+                </span>
+            </div>
+        </div>
+        <div>
+            <form action="add" method="post" id="revokeKeyForm">
+                <div class="key-section">
+                    <label class="control-label">Thời gian mất key (định dạng yyyy-mm-dd hh:mm:ss):</label>
+                    <input id="endTimeContent" name="lostKeyTime" required class="form-control">
+                </div>
+                <div class="submit-btn">
+                    <input type="button" class="btn btn-default closeReport"
+                           data-dismiss="modal" value="Hủy" style="float: right">
+                    <input type="submit" class="btn btn-danger" value="Báo cáo"
+                           style="float: right">
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 <div class="popup">
     <div class="popup-content">
         <div class="row">
             <div class="form-group  col-md-12">
-                          <span class="thong-tin-thanh-toan">
-                            <h5>Thêm cặp khoá mới</h5>
-                          </span>
+                <span class="thong-tin-thanh-toan">
+                    <h5>Thêm cặp khoá mới</h5>
+                </span>
             </div>
         </div>
         <div>
@@ -542,14 +448,14 @@
         $('#revokeKeyForm').submit(function (event) {
             // Ngăn chặn gửi form mặc định
             event.preventDefault();
-
+            const endTime = document.getElementById('endTimeContent').value;
             // Hiển thị hộp thoại xác nhận
             var confirmResult = confirm("Bạn có chắc chắn muốn đưa key hiện tại về trạng thái không chấp nhận xác thực mới không?");
 
             // Nếu người dùng xác nhận, gửi yêu cầu đến servlet
             if (confirmResult) {
                 console.log("revokeKey");
-                $.post('KeyManagementServlet', {action: 'revokeKey'}, function (response) {
+                $.post('KeyManagementServlet', {action: 'revokeKey', endTime: endTime}, function (response) {
                     // Xử lý kết quả nếu cầu
                     alert(response);
                     if (response.includes("đã được xử lý")) {
@@ -563,6 +469,9 @@
                         // Update buttons
                         revokeKeyBtn.disabled = true;
                         genKeyBtn.disabled = false;
+
+                        // đóng popup
+                        document.querySelector(".reportPopup").style.display = "none";
                     }
                 });
             }
@@ -610,6 +519,13 @@
     })
     document.querySelector(".close").addEventListener("click", function () {
         document.querySelector(".popup").style.display = "none";
+    })
+
+    document.getElementById("revokeKeyBtn").addEventListener("click", function () {
+        document.querySelector(".reportPopup").style.display = "flex";
+    })
+    document.querySelector(".closeReport").addEventListener("click", function () {
+        document.querySelector(".reportPopup").style.display = "none";
     })
     function readPublicKeyContent() {
         var input = document.getElementById('importPublicKey');

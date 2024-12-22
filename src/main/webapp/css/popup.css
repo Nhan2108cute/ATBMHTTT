@@ -1,0 +1,140 @@
+.popup {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+.popup-content {
+    position: relative;
+    background: #fff;
+    width: 75%;
+    height: 55%;
+    padding: 20px;
+    border-radius: 10px;
+    text-align: left;
+}
+.reportPopup {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+.reportPopup-content {
+    position: relative;
+    background: #fff;
+    width: 40%;
+    height: 25%;
+    padding: 20px;
+    border-radius: 10px;
+    text-align: left;
+}
+.submit-btn {
+    display: flex;
+    justify-content: center;
+    margin-top: 12px;
+    margin-bottom: 12px;
+}
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f9;
+}
+.randomGenerateKey {
+    display: flex;
+    align-items: center;
+}
+
+.keys {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 12px;
+    margin-bottom: 12px;
+}
+
+.key-section {
+    flex: 1;
+    margin-right: 10px;
+}
+
+.key-section h3 {
+    margin: 0 0 5px;
+}
+
+textarea {
+    width: 100%;
+    height: 150px;
+    resize: none;
+    padding: 10px;
+    font-family: monospace;
+    font-size: 12px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+.import-export-key {
+    justify-content: center;
+    display: flex;
+}
+
+.btn-group {
+    display: flex;
+    justify-content: space-around;
+    margin-top: 10px;
+}
+
+.btn-group button, .actions button {
+    padding: 8px 12px;
+    font-size: 14px;
+    border: none;
+    cursor: pointer;
+    background-color: #007BFF;
+    color: #fff;
+    border-radius: 4px;
+    transition: background-color 0.3s;
+}
+
+.btn-group button:hover, .actions button:hover {
+    background-color: #0056b3;
+}
+
+.actions {
+    display: flex;
+    justify-content: space-around;
+    margin-top: 20px;
+}
+
+input.import{
+    margin-top: 5px;
+}
+input.export{
+    margin-top: 5px;
+}
+input[type="file"]::-webkit-file-upload-button {
+    visibility: hidden; /* Ẩn nút mặc định */
+}
+
+input[type="file"]::before {
+    content: "Import";
+    display: inline-block;
+    background-color: #198754;
+    color: white;
+    padding: 0px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    text-align: center;
+}
+
+input[type="file"]:hover::before {
+    background-color: #198754;
+}

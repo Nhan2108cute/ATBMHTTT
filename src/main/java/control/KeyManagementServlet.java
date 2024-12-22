@@ -1,5 +1,6 @@
 package control;
 
+import dao.BillDAO;
 import dao.CreateKeyDAO;
 import dao.DAO;
 import entity.User;
@@ -9,6 +10,7 @@ import javax.servlet.http.*;
 import javax.servlet.annotation.*;
 import java.io.IOException;
 import java.security.PublicKey;
+import java.sql.Timestamp;
 
 @WebServlet(name = "KeyManagementServlet", value = "/KeyManagementServlet")
 public class KeyManagementServlet extends HttpServlet {
@@ -23,6 +25,7 @@ public class KeyManagementServlet extends HttpServlet {
         response.setCharacterEncoding("UTF-8");
         String action = request.getParameter("action");
         String publicKey = request.getParameter("publicKey");
+        String endTime = request.getParameter("endTime");
         HttpSession session = request.getSession();
         // Lấy thông tin người dùng từ session
         User user = (User) session.getAttribute("user");
@@ -34,12 +37,12 @@ public class KeyManagementServlet extends HttpServlet {
         int uId = Integer.parseInt(user.getId());
         CreateKeyDAO dao = new CreateKeyDAO();
         boolean keyExists = dao.checkKey(uId);
-
         if (user != null) {
             switch (action) {
                 case "revokeKey":
                     if (keyExists) {
-                        dao.reportLostKey(uId);
+                        dao.reportLostKey(Timestamp.valueOf(endTime), uId);
+                        dao.cancelOrdersAfterLostKey(uId, Timestamp.valueOf(endTime));
                         session.setAttribute("keyExists", false);
                         response.getWriter().write("Yêu cầu hủy key của bạn đã được xử lý");
                     } else {
