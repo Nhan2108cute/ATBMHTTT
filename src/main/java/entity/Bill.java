@@ -7,6 +7,7 @@ public class Bill {
     private User nguoiDung;
     private String ten;
     private Timestamp ngayLap_hoaDon;
+    private Timestamp lancuoithaydoi_hoaDon;
     private String diachi;
     private String pt_thanhToan;
     private String ghiChu;
@@ -16,12 +17,13 @@ public class Bill {
     private String status;
 
 
-    public Bill(int id, User nguoiDung, String ten, Timestamp ngayLap_hoaDon, String diachi, String pt_thanhToan, String ghiChu, double tongTien, String hash, String signature,String status) {
+    public Bill(int id, User nguoiDung, String ten, Timestamp ngayLap_hoaDon, Timestamp lancuoithaydoi_hoaDon, String diachi, String pt_thanhToan, String ghiChu, double tongTien, String hash, String signature,String status) {
 
         this.id = id;
         this.nguoiDung = nguoiDung;
         this.ten = ten;
         this.ngayLap_hoaDon = ngayLap_hoaDon;
+        this.lancuoithaydoi_hoaDon = lancuoithaydoi_hoaDon;
         this.diachi = diachi;
         this.pt_thanhToan = pt_thanhToan;
         this.ghiChu = ghiChu;
@@ -57,6 +59,14 @@ public class Bill {
 
     public void setNgayLap_hoaDon(Timestamp ngayLap_hoaDon) {
         this.ngayLap_hoaDon = ngayLap_hoaDon;
+    }
+
+    public Timestamp getLancuoithaydoi_hoaDon() {
+        return lancuoithaydoi_hoaDon;
+    }
+
+    public void setLancuoithaydoi_hoaDon(Timestamp lancuoithaydoi_hoaDon) {
+        this.lancuoithaydoi_hoaDon = lancuoithaydoi_hoaDon;
     }
 
     public String getDiachi() {
@@ -141,4 +151,3 @@ public class Bill {
     }
 
 }
-

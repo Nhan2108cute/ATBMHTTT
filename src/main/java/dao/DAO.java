@@ -998,7 +998,7 @@ public class DAO {
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
                 return new Bill(rs.getInt("id"), null, rs.getString("ten"),
-                        rs.getTimestamp("ngayLap_hoaDon"), rs.getString("diachi"),
+                        rs.getTimestamp("ngayLap_hoaDon"),  rs.getTimestamp("lancuoithaydoi_hoaDon"), rs.getString("diachi"),
                         rs.getString("pt_thanhToan"), rs.getString("ghiChu"),
                         rs.getDouble("tongTien"), rs.getString("hash"),
                         rs.getString("signature"), rs.getString("status"));

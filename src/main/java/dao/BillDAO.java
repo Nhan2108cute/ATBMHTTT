@@ -236,6 +236,7 @@ public class BillDAO {
                         null, // Thay bằng User nếu cần thông tin
                         rs.getString("ten"),
                         rs.getTimestamp("ngaylap_hd"),
+                        rs.getTimestamp("lancuoithaydoi_hd"),
                         rs.getString("dia_chi_giao_hang"),
                         rs.getString("pt_thanhtoan"),
                         rs.getString("ghichu"),
@@ -254,70 +255,32 @@ public class BillDAO {
 
     public List<Bill> getAllBills() {
         List<Bill> list = new ArrayList<>();
-        String allBillsQuery =
-                "SELECT h.*, n.hoten, pk.status as key_status, pk.created_at as key_created, " +
-                        "pk.end_at as key_end_at, pk.key_value as public_key " +
-                        "FROM hoadon h " +
-                        "JOIN nguoidung n ON h.id_ngdung = n.id " +
-                        "LEFT JOIN (" +
-                        "SELECT user_id, status, created_at, end_at, key_value " +
-                        "FROM public_keys pk1 " +
-                        "WHERE (pk1.status = 'Xac thuc' OR pk1.status = 'Mat') " +
-                        "AND created_at = (" +
-                        "SELECT MAX(created_at) " +
-                        "FROM public_keys pk2 " +
-                        "WHERE pk2.user_id = pk1.user_id" +
-                        ")" +
-                        ") pk ON h.id_ngdung = pk.user_id " +
-                        "ORDER BY h.ngaylap_hd DESC";
+        // Query đơn hàng đã xác thực
+        String query = "SELECT hd.id AS hoadon_id, hd.ten, hd.dia_chi_giao_hang, hd.ngaylap_hd, " +
+                "hd.tongtien, hd.ghichu,hd.pt_thanhtoan, hd.hash, hd.signature, hd.status, hd.lancuoithaydoi_hd " + // Thêm hd.signature
+                "FROM hoadon hd";
 
         try (Connection conn = new DBConnect().getConnection();
-             PreparedStatement ps = conn.prepareStatement(allBillsQuery)) {
-
-            ResultSet rs = ps.executeQuery();
-            while (rs.next()) {
-                Bill bill = createBill(rs);
-
-                // Nếu trạng thái là Hủy, không thực hiện bất kỳ thay đổi nào
-                if ("Huy".equals(bill.getStatus())) {
-                    System.out.println("Đơn hàng ID: " + bill.getId() + " có trạng thái Hủy. Không thay đổi.");
+             PreparedStatement ps = conn.prepareStatement(query)) {
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    Bill bill = new Bill();
+                    bill.setId(rs.getInt("hoadon_id"));
+                    bill.setTen(rs.getString("ten"));
+                    bill.setDiachi(rs.getString("dia_chi_giao_hang"));
+                    bill.setNgayLap_hoaDon(rs.getTimestamp("ngaylap_hd"));
+                    bill.setTongTien(rs.getDouble("tongtien"));
+                    bill.setGhiChu(rs.getString("ghichu"));
+                    bill.setPt_thanhToan(rs.getString("pt_thanhtoan"));
+                    bill.setHash(rs.getString("hash"));
+                    bill.setSignature(rs.getString("signature")); // Gán giá trị signature
+                    bill.setStatus(rs.getString("status"));
+                    bill.setLancuoithaydoi_hoaDon(rs.getTimestamp("lancuoithaydoi_hd"));
                     list.add(bill);
-                    continue;
                 }
-
-                // Xử lý logic xác thực cho các trạng thái khác
-                String keyStatus = rs.getString("key_status");
-                Timestamp keyEndAt = rs.getTimestamp("key_end_at");
-                String publicKey = rs.getString("public_key");
-                String signature = rs.getString("signature");
-
-                if (signature != null && !signature.isEmpty() && publicKey != null) {
-                    if ("Xac thuc".equals(keyStatus) && keyEndAt == null) {
-                        if (verifySignature(bill.getHash(), publicKey, signature)) {
-                            bill.setStatus("Da xac thuc");
-                            updateBillStatus(bill.getId(), "Da xac thuc");
-                        } else {
-                            bill.setStatus("Chua xac thuc");
-                            updateBillStatus(bill.getId(), "Chua xac thuc");
-                        }
-                    } else {
-                        bill.setStatus("Chua xac thuc");
-                        updateBillStatus(bill.getId(), "Chua xac thuc");
-                    }
-                } else {
-                    bill.setStatus("Chua xac thuc");
-                    updateBillStatus(bill.getId(), "Chua xac thuc");
-                }
-
-                list.add(bill);
             }
         } catch (Exception e) {
             e.printStackTrace();
-        }
-
-        // In log danh sách hóa đơn
-        for (Bill bill : list) {
-            System.out.println("ID: " + bill.getId() + ", Status: " + bill.getStatus());
         }
         return list;
     }
