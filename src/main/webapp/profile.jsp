@@ -373,20 +373,6 @@
 
                                         <hr class="my-4">
 
-                                        <!-- Form báo mất key -->
-                                        <form action="#" method="post" id="reportLostKeyForm">
-                                            <div class="row justify-content-center mt-3">
-                                                <div class="col-12 col-md-6 text-center">
-                                                    <p class="text-danger">Báo cáo private key bị lộ</p>
-                                                    <button id="reportLostKeyBtn" class="btn btn-warning" type="submit">
-                                                        Báo mất key
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        </form>
-
-                                        <hr class="my-4">
-
                                         <!-- Form tạo key mới -->
                                         <div action="#" method="post">
                                             <div class="row justify-content-center mt-3">
@@ -496,6 +482,8 @@
             }
         });
     });
+
+
     document.addEventListener('DOMContentLoaded', function () {
         var keyExists = ${sessionScope.keyExists};
         var revokeKeyBtn = document.getElementById('revokeKeyBtn');
@@ -523,63 +511,8 @@
 
 
     $(document).ready(function () {
-        // Bắt sự kiện khi nhấn vào nút "Yêu cầu đưa key về trạng thái không chấp nhận mới"
-        $('#revokeKeyForm').submit(function (event) {
-            // Ngăn chặn gửi form mặc định
-            event.preventDefault();
 
-            // Hiển thị hộp thoại xác nhận
-            var confirmResult = confirm("Bạn có chắc chắn muốn yêu cầu đưa key về trạng thái không chấp nhận mới không?");
-
-            // Nếu người dùng xác nhận, gửi yêu cầu đến servlet
-            if (confirmResult) {
-                console.log("revokeKey");
-                $.post('KeyManagementServlet', {action: 'revokeKey'}, function (response) {
-                    // Xử lý kết quả nếu cầu
-                    alert(response);
-                });
-            }
-        });
-
-        $('#reportLostKeyForm').submit(function (event) {
-            event.preventDefault();
-
-            var confirmResult = confirm("Bạn có chắc chắn muốn báo mất private key không?");
-
-            if (confirmResult) {
-                $.post('KeyManagementServlet', {
-                    action: 'reportLostKey'
-                }, function (response) {
-                    alert(response);
-                    // Refresh trang sau khi xử lý thành công để cập nhật trạng thái các nút
-                    location.reload();
-                }).fail(function(xhr, status, error) {
-                    alert('Có lỗi xảy ra khi báo mất key: ' + error);
-                });
-            }
-        });
-
-        // Kiểm tra điều kiện và tắt/bật button
-        document.addEventListener('DOMContentLoaded', function () {
-            var keyExists = ${sessionScope.keyExists};
-
-            // Quản lý trạng thái các nút
-            var reportLostKeyBtn = document.getElementById('reportLostKeyBtn');
-            var revokeKeyBtn = document.getElementById('revokeKeyBtn');
-            var genKeyBtn = document.getElementById('genKeyBtn');
-
-            if (keyExists) {
-                reportLostKeyBtn.disabled = false;
-                revokeKeyBtn.disabled = false;
-                genKeyBtn.disabled = true;
-            } else {
-                reportLostKeyBtn.disabled = true;
-                revokeKeyBtn.disabled = true;
-                genKeyBtn.disabled = false;
-            }
-        });
-
-        // Bắt sự kiện khi nhấn vào nút "Tạo key mới"
+        // Bắt sự kiện khi nhấn vào nút "tạo key mới"
         $('#generateNewKeyForm').submit(function (event) {
             // Ngăn chặn gửi form mặc định
             event.preventDefault();
@@ -589,9 +522,55 @@
             $.post('KeyManagementServlet', {action: 'generateNewKey', publicKey: publicKey},  function (response) {
                 // Xử lý kết quả nếu cần
                 alert(response);
+                // cập nhật button sau khi tạo key thành cong
+                if (response.includes("đã được xử lý")) {
+                    var revokeKeyBtn = document.getElementById('revokeKeyBtn');
+                    var genKeyBtn = document.getElementById('genKeyBtn');
+                    var keyStatus = document.getElementById('keyStatus');
+
+                    // cập nhật status
+                    keyStatus.innerHTML = '<p class="text-success" style="font-size: large">Tài khoản của bạn đã có key</p>';
+
+                    // cập nhật buttons
+                    revokeKeyBtn.disabled = false;
+                    genKeyBtn.disabled = true;
+
+                    // đóng popup
+                    document.querySelector(".popup").style.display = "none";
+                }
             }).fail(function () {
                 alert("Có lỗi xảy ra khi gửi Public Key đến server!");
             });
+        });
+
+        // Bắt sự kiện khi nhấn vào nút "Yêu cầu đưa key về trạng thái không chấp nhận mới"
+        $('#revokeKeyForm').submit(function (event) {
+            // Ngăn chặn gửi form mặc định
+            event.preventDefault();
+
+            // Hiển thị hộp thoại xác nhận
+            var confirmResult = confirm("Bạn có chắc chắn muốn đưa key hiện tại về trạng thái không chấp nhận xác thực mới không?");
+
+            // Nếu người dùng xác nhận, gửi yêu cầu đến servlet
+            if (confirmResult) {
+                console.log("revokeKey");
+                $.post('KeyManagementServlet', {action: 'revokeKey'}, function (response) {
+                    // Xử lý kết quả nếu cầu
+                    alert(response);
+                    if (response.includes("đã được xử lý")) {
+                        var revokeKeyBtn = document.getElementById('revokeKeyBtn');
+                        var genKeyBtn = document.getElementById('genKeyBtn');
+                        var keyStatus = document.getElementById('keyStatus');
+
+                        // Cập nhật
+                        keyStatus.innerHTML = '<p class="text-warning" style="font-size: large">Tài khoản của bạn chưa có key</p>';
+
+                        // Update buttons
+                        revokeKeyBtn.disabled = true;
+                        genKeyBtn.disabled = false;
+                    }
+                });
+            }
         });
     });
 

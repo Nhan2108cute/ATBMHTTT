@@ -35,20 +35,10 @@ public class KeyManagementServlet extends HttpServlet {
             switch (action) {
                 case "revokeKey":
                     if (keyExists) {
-                        dao.removeAuthKey(uId);
+                        dao.reportLostKey(uId);
                         response.getWriter().write("Yêu cầu hủy key của bạn đã được xử lý");
                     } else {
                         response.getWriter().write("Yêu cầu hủy key của bạn không thành công");
-                    }
-                    break;
-
-                case "reportLostKey":
-                    if (keyExists) {
-                        dao.reportLostKey(uId);
-                        response.getWriter().write("Key của bạn đã được đánh dấu là bị lộ. "
-                                + "Vui lòng tạo key mới để tiếp tục sử dụng.");
-                    } else {
-                        response.getWriter().write("Không tìm thấy key đang hoạt động để báo mất");
                     }
                     break;
 
