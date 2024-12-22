@@ -879,8 +879,8 @@ public class DAO {
         try {
             conn = new DBConnect().getConnection();
             String sql = "UPDATE public_keys\n" +
-                    "SET status = 'Huy'\n" +
-                    "WHERE status <> 'Huy' AND created_at < DATE_SUB(CURDATE(), INTERVAL 1 MONTH) AND user_id = ?";
+                    "SET status = 'Mat'\n" +
+                    "WHERE status <> 'Mat' AND created_at < DATE_SUB(CURDATE(), INTERVAL 1 MONTH) AND user_id = ?";
             ps = conn.prepareStatement(sql);
             ps.setInt(1, uId);
             ps.executeUpdate();

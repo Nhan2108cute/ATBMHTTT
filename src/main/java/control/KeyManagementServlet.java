@@ -1,5 +1,6 @@
 package control;
 
+import dao.CreateKeyDAO;
 import dao.DAO;
 import entity.User;
 
@@ -17,38 +18,47 @@ public class KeyManagementServlet extends HttpServlet {
     }
 
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
         response.setCharacterEncoding("UTF-8");
         String action = request.getParameter("action");
         String publicKey = request.getParameter("publicKey");
         HttpSession session = request.getSession();
-        Object o = session.getAttribute("user");
-        User user = (User) o;
+        // Lấy thông tin người dùng từ session
+        User user = (User) session.getAttribute("user");
+
+        if (user == null) {
+            response.sendRedirect("login");
+            return;
+        }
         int uId = Integer.parseInt(user.getId());
-        DAO dao = new DAO();
+        CreateKeyDAO dao = new CreateKeyDAO();
         boolean keyExists = dao.checkKey(uId);
-        session.setAttribute("keyExists", keyExists);
+
         if (user != null) {
-            if ("revokeKey".equals(action)) {
-                if (keyExists) {
-                    dao.removeAuthKey(uId);
-                    response.getWriter().write("Yêu cầu hủy key của bạn đã được xử lý");
-                } else {
-                    response.getWriter().write("Yêu cầu hủy key của bạn không thành công");
-                }
+            switch (action) {
+                case "revokeKey":
+                    if (keyExists) {
+                        dao.reportLostKey(uId);
+                        session.setAttribute("keyExists", false);
+                        response.getWriter().write("Yêu cầu hủy key của bạn đã được xử lý");
+                    } else {
+                        response.getWriter().write("Yêu cầu hủy key của bạn không thành công");
+                    }
+                    break;
+                case "generateNewKey":
+                    if (!keyExists && publicKey != null && !publicKey.isEmpty()) {
+                        dao.create_key(publicKey, uId);
+                        // Cập nhật session sau khi tạo key thành công
+                        session.setAttribute("keyExists", true);
+                        response.getWriter().write("Yêu cầu tạo key mới của bạn đã được xử lý thành công.");
+                    } else {
+                        response.getWriter().write("Yêu cầu tạo key mới của bạn không thành công. Key đã tồn tại hoặc dữ liệu không hợp lệ.");
+                    }
+                    break;
 
-            } else if ("generateNewKey".equals(action)) {
-                if(!keyExists && publicKey != null && !publicKey.isEmpty()){
-                    dao.create_key(publicKey);
-                    response.getWriter().write("Yêu cầu tạo key mới của bạn đã được xử lý");
-                } else {
-                    response.getWriter().write("Yêu cầu tạo key mới của bạn không thành công");
-                }
-
-
-            } else {
-                // Xử lý các trường hợp khác nếu cần
-                response.getWriter().write("Hành động không hợp lệ");
+                default:
+                    response.getWriter().write("Hành động không hợp lệ");
             }
         } else {
             response.sendRedirect("login");
