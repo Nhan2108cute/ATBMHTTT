@@ -135,7 +135,7 @@
         }
 
     </style>
-    <title>QCN Money</title>
+    <title>Petmark ❤️</title>
 </head>
 <body class="">
 <jsp:include page="header/header.jsp"></jsp:include>
@@ -486,13 +486,13 @@
 
     document.addEventListener('DOMContentLoaded', function () {
         var keyExists = ${sessionScope.keyExists};
-        var revokeKeyBtn = document.getElementById('revokeKeyBtn');
+        var reportLostKeyBtn = document.getElementById('reportLostKeyBtn');
 
         // Kiểm tra điều kiện và tắt/bật button
         if (!keyExists) {
-            revokeKeyBtn.disabled = true;
+            reportLostKeyBtn.disabled = true;
         } else {
-            revokeKeyBtn.disabled = false;
+            reportLostKeyBtn.disabled = false;
         }
     });
 
