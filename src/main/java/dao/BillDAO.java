@@ -26,7 +26,11 @@ public class BillDAO {
         ResultSet resultSet = null;
         int generatedId = -1;
 
+<<<<<<< HEAD
         String query = "INSERT INTO hoadon (ngaylap_hd, id_ngdung, ten, dia_chi_giao_hang, tongtien, pt_thanhtoan, ghichu, hash, signature,status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+=======
+        String query = "INSERT INTO hoadon (ngaylap_hd, id_ngdung, ten, dia_chi_giao_hang, tongtien, pt_thanhtoan, ghichu, hash, signature,status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?,?)";
+>>>>>>> 02c0508f97133b1975d64e16ae411fa8b2e478e6
 
         try {
             conn = new DBConnect().getConnection();
@@ -42,7 +46,11 @@ public class BillDAO {
             ps.setString(7, bill.getGhiChu());
             ps.setString(8, bill.getHash());
             ps.setString(9, ""); // Signature để trống
+<<<<<<< HEAD
             ps.setString(10,bill.getStatus());
+=======
+            ps.setString(10, bill.getStatus());
+>>>>>>> 02c0508f97133b1975d64e16ae411fa8b2e478e6
 
             ps.executeUpdate();
 
@@ -121,7 +129,7 @@ public class BillDAO {
     public List<Bill> getBillDetails(String userId) {
         List<Bill> billList = new ArrayList<>();
         String query = "SELECT hd.id AS hoadon_id, hd.ten, hd.dia_chi_giao_hang, hd.ngaylap_hd, " +
-                "hd.tongtien, hd.ghichu, hd.hash, hd.signature " + // Thêm hd.signature
+                "hd.tongtien, hd.ghichu, hd.hash, hd.signature, hd.status " + // Thêm hd.signature
                 "FROM hoadon hd " +
                 "WHERE hd.id_ngdung = ?";
 
@@ -140,7 +148,7 @@ public class BillDAO {
                     bill.setGhiChu(rs.getString("ghichu"));
                     bill.setHash(rs.getString("hash"));
                     bill.setSignature(rs.getString("signature")); // Gán giá trị signature
-
+                    bill.setStatus(rs.getString("status"));
                     billList.add(bill);
                 }
             }
@@ -148,6 +156,16 @@ public class BillDAO {
             e.printStackTrace();
         }
         return billList;
+    }
+    public void cancelOrder(String bID) {
+        String query = "UPDATE hoadon SET status = 'Huy' where id = ?";
+        try {
+            conn = new DBConnect().getConnection();
+            ps = conn.prepareStatement(query);
+            ps.setString(1, bID);
+            ps.executeUpdate();
+        } catch (Exception e) {
+        }
     }
 
     // Phương thức kiểm tra và cập nhật trạng thái đơn hàng

@@ -16,7 +16,11 @@ public class Bill {
     private String status;
 
 
+<<<<<<< HEAD
     public Bill(int id, User nguoiDung, String ten, Timestamp ngayLap_hoaDon, String diachi, String pt_thanhToan, String ghiChu, double tongTien, String hash, String signature,String status) {
+=======
+    public Bill(int id, User nguoiDung, String ten, Timestamp ngayLap_hoaDon, String diachi, String pt_thanhToan, String ghiChu, double tongTien, String hash, String signature, String status) {
+>>>>>>> 02c0508f97133b1975d64e16ae411fa8b2e478e6
         this.id = id;
         this.nguoiDung = nguoiDung;
         this.ten = ten;
@@ -138,5 +142,6 @@ public class Bill {
                 ", status='" + status + '\'' +
                 '}';
     }
+
 }
 

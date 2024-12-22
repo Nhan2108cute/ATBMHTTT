@@ -104,7 +104,7 @@ CREATE TABLE `cart` (
 DROP TABLE IF EXISTS `hoadon`;
 CREATE TABLE `hoadon`  (
                            `id` int NOT NULL AUTO_INCREMENT,
-                           `ngaylap_hd` date NOT NULL,
+                           `ngaylap_hd` timestamp NOT NULL DEFAULT current_timestamp,
                            `id_ngdung` int NOT NULL,
                            `ten` varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
                            `dia_chi_giao_hang` varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
@@ -113,6 +113,7 @@ CREATE TABLE `hoadon`  (
                            `ghichu` varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
                            `hash` varchar(500) NOT NULL,
                            `signature` varchar(500) NOT NULL,
+                           `status` varchar(255) NOT NULL,
                            PRIMARY KEY (`id`) USING BTREE,
                            INDEX `id_ngdung`(`id_ngdung` ASC) USING BTREE,
                            CONSTRAINT `id_ngdung` FOREIGN KEY (`id_ngdung`) REFERENCES `nguoidung` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT

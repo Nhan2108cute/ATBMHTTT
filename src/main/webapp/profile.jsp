@@ -215,31 +215,27 @@
                                             <table class="table table-bordered">
                                                 <thead class="thead-light">
                                                 <tr>
-                                                    <%--<th>STT</th>--%>
-                                                    <th>Id hóa đơn</th>
-                                                    <%--<th>Tên người dùng</th>--%>
-                                                    <th>Tên mặt hàng</th>
-                                                    <%--<th>Số lượng</th>--%>
                                                     <th>Ngày đặt hàng</th>
+                                                    <th>Tên mặt hàng</th>
                                                     <th>Địa chỉ</th>
                                                     <th>Tổng tiền</th>
                                                     <th>Ghi chú</th>
-                                                    <th>Hoạt động</th>
+                                                    <th>Chức năng</th>
                                                     <th>Mã Hash</th>
-                                                    <th>Chữ Ký</th>
+                                                    <th>Chữ ký</th>
+                                                    <th>Trạng thái</th>
                                                 </tr>
                                                 </thead>
                                                 <tbody>
                                                 <c:forEach var="bill" items="${sessionScope.userBills}" varStatus="ss">
                                                     <tr>
-                                                        <td>${bill.id}</td>
-                                                        <td>${bill.ten}</td>
-                                                            <%--<td>${bill.nguoidung}</td>--%>
                                                         <td>${bill.ngayLap_hoaDon}</td>
+                                                        <td>${bill.ten}</td>
                                                         <td>${bill.diachi}</td>
                                                         <td>${bill.tongTien} VNĐ</td>
                                                         <td>${bill.ghiChu}</td>
-                                                        <td>${""}</td>
+                                                        <td><a href="cancelOrder?bID=${bill.id}" class="btn btn-primary btn-sm trash" title="Xóa"><i class="fas fa-trash-alt"></i></a>
+                                                        </td>
                                                         <td>${bill.hash}</td>
                                                         <td>
                                                             <c:choose>
@@ -251,6 +247,7 @@
                                                                 </c:otherwise>
                                                             </c:choose>
                                                         </td>
+                                                        <td>${bill.status}</td>
                                                         <c:set var="sessionValue" value="${sessionScope.error_id}"/>
                                                         <c:set var="compareValue" value="${bill.id}"/>
                                                         <c:if test="${sessionValue == compareValue}">
@@ -258,7 +255,6 @@
                                                                class="btn btn-primary btn-sm trash" title="Xóa"><i
                                                                 class="fas fa-trash-alt"></i>
                                                             </c:if>
-
                                                     </tr>
                                                 </c:forEach>
                                                 </tbody>
@@ -486,13 +482,13 @@
 
     document.addEventListener('DOMContentLoaded', function () {
         var keyExists = ${sessionScope.keyExists};
-        var reportLostKeyBtn = document.getElementById('reportLostKeyBtn');
+        var revokeKeyBtn = document.getElementById('revokeKeyBtn');
 
         // Kiểm tra điều kiện và tắt/bật button
         if (!keyExists) {
-            reportLostKeyBtn.disabled = true;
+            revokeKeyBtn.disabled = true;
         } else {
-            reportLostKeyBtn.disabled = false;
+            revokeKeyBtn.disabled = false;
         }
     });
 
