@@ -49,34 +49,11 @@ public class SignOrderTool {
         gbc.gridx = 1;
         mainPanel.add(hashField, gbc);
 
-        // Public Key Input
-        JLabel publicKeyLabel = new JLabel("Public Key:");
-        publicKeyLabel.setFont(labelFont);
-        gbc.gridx = 0;
-        gbc.gridy = 1;
-        mainPanel.add(publicKeyLabel, gbc);
-
-        JTextArea publicKeyArea = new JTextArea(5, 25);
-        publicKeyArea.setLineWrap(true);
-        publicKeyArea.setWrapStyleWord(true);
-        publicKeyArea.setBorder(new LineBorder(Color.GRAY));
-        JScrollPane publicKeyScrollPane = new JScrollPane(publicKeyArea);
-        gbc.gridx = 1;
-        mainPanel.add(publicKeyScrollPane, gbc);
-
-        // Nút tải file Public Key
-        JButton uploadPublicKeyButton = new JButton("Tải File Public Key");
-        uploadPublicKeyButton.setBackground(buttonColor);
-        uploadPublicKeyButton.setForeground(Color.WHITE);
-        gbc.gridx = 1;
-        gbc.gridy = 2;
-        mainPanel.add(uploadPublicKeyButton, gbc);
-
         // Private Key Input
         JLabel privateKeyLabel = new JLabel("Private Key:");
         privateKeyLabel.setFont(labelFont);
         gbc.gridx = 0;
-        gbc.gridy = 3;
+        gbc.gridy = 1;
         mainPanel.add(privateKeyLabel, gbc);
 
         JTextArea privateKeyArea = new JTextArea(5, 25);
@@ -92,7 +69,7 @@ public class SignOrderTool {
         uploadPrivateKeyButton.setBackground(buttonColor);
         uploadPrivateKeyButton.setForeground(Color.WHITE);
         gbc.gridx = 1;
-        gbc.gridy = 4;
+        gbc.gridy = 2;
         mainPanel.add(uploadPrivateKeyButton, gbc);
 
         // Nút Ký Hash
@@ -100,45 +77,25 @@ public class SignOrderTool {
         signButton.setBackground(buttonColor);
         signButton.setForeground(Color.WHITE);
         gbc.gridx = 1;
-        gbc.gridy = 5;
+        gbc.gridy = 3;
         mainPanel.add(signButton, gbc);
 
         // Kết quả chữ ký
         JLabel resultLabel = new JLabel("Chữ Ký:");
         resultLabel.setFont(labelFont);
         gbc.gridx = 0;
-        gbc.gridy = 6;
+        gbc.gridy = 4;
         mainPanel.add(resultLabel, gbc);
 
         JTextArea resultArea = new JTextArea(3, 25);
         resultArea.setEditable(false);
         resultArea.setBorder(new LineBorder(Color.GRAY));
-        resultArea.setBackground(Color.WHITE);
         JScrollPane resultScrollPane = new JScrollPane(resultArea);
         gbc.gridx = 1;
         mainPanel.add(resultScrollPane, gbc);
 
         frame.add(mainPanel, BorderLayout.CENTER);
         frame.setVisible(true);
-
-        // Sự kiện tải file Public Key
-        uploadPublicKeyButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                JFileChooser fileChooser = new JFileChooser();
-                int returnValue = fileChooser.showOpenDialog(null);
-                if (returnValue == JFileChooser.APPROVE_OPTION) {
-                    File selectedFile = fileChooser.getSelectedFile();
-                    try (FileReader reader = new FileReader(selectedFile)) {
-                        char[] buffer = new char[(int) selectedFile.length()];
-                        reader.read(buffer);
-                        publicKeyArea.setText(new String(buffer));
-                    } catch (Exception ex) {
-                        JOptionPane.showMessageDialog(frame, "Không thể đọc file Public Key!");
-                    }
-                }
-            }
-        });
 
         // Sự kiện tải file Private Key
         uploadPrivateKeyButton.addActionListener(new ActionListener() {
@@ -164,25 +121,37 @@ public class SignOrderTool {
             @Override
             public void actionPerformed(ActionEvent e) {
                 String hash = hashField.getText();
-                String publicKeyContent = publicKeyArea.getText();
                 String privateKeyContent = privateKeyArea.getText();
 
-                if (hash.isEmpty() || publicKeyContent.isEmpty() || privateKeyContent.isEmpty()) {
-                    JOptionPane.showMessageDialog(frame, "Vui lòng nhập đủ Mã Hash, Public Key và Private Key!");
+                if (hash.isEmpty() || privateKeyContent.isEmpty()) {
+                    JOptionPane.showMessageDialog(frame, "Vui lòng nhập đủ Mã Hash và Private Key!");
                     return;
                 }
 
                 try {
+                    if (!isHashMatchingUser(hash)) {
+                        JOptionPane.showMessageDialog(frame, "Mã hash không tương ứng với người dùng!");
+                        return;
+                    }
+
+                    PublicKey publicKey = getPublicKeyFromDatabase(hash);
+
+                    // Kiểm tra public key có tương ứng với mã hash không
+                    if (publicKey == null) {
+                        JOptionPane.showMessageDialog(frame, "Public Key không tương ứng với Mã Hash!");
+                        return;
+                    }
+
                     if (isAlreadySigned(hash)) {
                         JOptionPane.showMessageDialog(frame, "Đơn hàng đã được ký trước đó!");
                         return;
                     }
-                    PublicKey publicKey = getPublicKeyFromInput(publicKeyContent);
+
                     PrivateKey privateKey = getPrivateKeyFromInput(privateKeyContent);
 
-                    // Kiểm tra public key có hợp lệ không
-                    if (!isPublicKeyValid(hash, publicKeyContent)) {
-                        JOptionPane.showMessageDialog(frame, "Public Key không hợp lệ hoặc không thuộc mã Hash này!");
+                    // Kiểm tra xem private key có khớp với public key không
+                    if (!isKeyPairValid(publicKey, privateKey)) {
+                        JOptionPane.showMessageDialog(frame, "Mã Hash hoặc PrivateKey bị lỗi!");
                         return;
                     }
 
@@ -200,6 +169,7 @@ public class SignOrderTool {
             }
         });
     }
+
     private static boolean isAlreadySigned(String hash) {
         String query = "SELECT signature FROM hoadon WHERE hash = ?";
         try (Connection conn = DBConnect.getConnection();
@@ -218,53 +188,30 @@ public class SignOrderTool {
         return false; // Chưa có chữ ký
     }
 
-    // Lấy Public Key từ input
-    private static PublicKey getPublicKeyFromInput(String publicKeyContent) throws Exception {
-        String cleanPublicKey = cleanKey(publicKeyContent);
-        byte[] keyBytes = Base64.getDecoder().decode(cleanPublicKey);
-        X509EncodedKeySpec keySpec = new X509EncodedKeySpec(keyBytes);
-        KeyFactory keyFactory = KeyFactory.getInstance("RSA");
-        return keyFactory.generatePublic(keySpec);
-    }
-
-    // Lấy Private Key từ input
-    private static PrivateKey getPrivateKeyFromInput(String privateKeyContent) throws Exception {
-        String cleanPrivateKey = cleanKey(privateKeyContent);
-        byte[] keyBytes = Base64.getDecoder().decode(cleanPrivateKey);
-        PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(keyBytes);
-        KeyFactory keyFactory = KeyFactory.getInstance("RSA");
-        return keyFactory.generatePrivate(keySpec);
-    }
-
-    // Làm sạch khóa (bỏ BEGIN/END KEY)
-    private static String cleanKey(String keyContent) {
-        return keyContent.replace("-----BEGIN PUBLIC KEY-----", "")
-                .replace("-----END PUBLIC KEY-----", "")
-                .replace("-----BEGIN PRIVATE KEY-----", "")
-                .replace("-----END PRIVATE KEY-----", "")
-                .replaceAll("\\s", "");
-    }
-
-    // Ký mã Hash bằng Private Key
-    private static String signHashWithPrivateKey(String hash, PrivateKey privateKey) throws Exception {
-        Signature signature = Signature.getInstance("SHA256withRSA");
-        signature.initSign(privateKey);
-        signature.update(hash.getBytes("UTF-8"));
-        return Base64.getEncoder().encodeToString(signature.sign());
-    }
-
-    // Kiểm tra nếu Public Key hợp lệ
-    private static boolean isPublicKeyValid(String hash, String publicKeyContent) {
-        String cleanPublicKey = cleanKey(publicKeyContent);
-        String query = "SELECT pk.key_value " +
-                "FROM public_keys pk " +
+    private static PublicKey getPublicKeyFromDatabase(String hash) throws Exception {
+        String query = "SELECT pk.key_value FROM public_keys pk " +
                 "JOIN hoadon hd ON pk.user_id = hd.id_ngdung " +
-                "WHERE hd.hash = ? AND pk.key_value = ? AND pk.status = 'Xac thuc'";
+                "WHERE hd.hash = ? AND pk.status = 'Xac thuc'";
         try (Connection conn = DBConnect.getConnection();
              PreparedStatement ps = conn.prepareStatement(query)) {
 
             ps.setString(1, hash);
-            ps.setString(2, cleanPublicKey);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    String publicKeyString = rs.getString("key_value");
+                    return getPublicKeyFromString(publicKeyString);
+                }
+            }
+        }
+        return null;
+    }
+
+    private static boolean isHashMatchingUser(String hash) {
+        String query = "SELECT id_ngdung FROM hoadon WHERE hash = ?";
+        try (Connection conn = DBConnect.getConnection();
+             PreparedStatement ps = conn.prepareStatement(query)) {
+
+            ps.setString(1, hash);
             try (ResultSet rs = ps.executeQuery()) {
                 return rs.next();
             }
@@ -274,7 +221,55 @@ public class SignOrderTool {
         return false;
     }
 
-    // Lưu chữ ký vào database
+    private static PublicKey getPublicKeyFromString(String publicKeyContent) throws Exception {
+        String cleanPublicKey = cleanKey(publicKeyContent);
+        byte[] keyBytes = Base64.getDecoder().decode(cleanPublicKey);
+        X509EncodedKeySpec keySpec = new X509EncodedKeySpec(keyBytes);
+        KeyFactory keyFactory = KeyFactory.getInstance("RSA");
+        return keyFactory.generatePublic(keySpec);
+    }
+
+    private static PrivateKey getPrivateKeyFromInput(String privateKeyContent) throws Exception {
+        String cleanPrivateKey = cleanKey(privateKeyContent);
+        byte[] keyBytes = Base64.getDecoder().decode(cleanPrivateKey);
+        PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(keyBytes);
+        KeyFactory keyFactory = KeyFactory.getInstance("RSA");
+        return keyFactory.generatePrivate(keySpec);
+    }
+
+    private static String cleanKey(String keyContent) {
+        return keyContent.replace("-----BEGIN PUBLIC KEY-----", "")
+                .replace("-----END PUBLIC KEY-----", "")
+                .replace("-----BEGIN PRIVATE KEY-----", "")
+                .replace("-----END PRIVATE KEY-----", "")
+                .replaceAll("\\s", "");
+    }
+
+    private static String signHashWithPrivateKey(String hash, PrivateKey privateKey) throws Exception {
+        Signature signature = Signature.getInstance("SHA256withRSA");
+        signature.initSign(privateKey);
+        signature.update(hash.getBytes("UTF-8"));
+        return Base64.getEncoder().encodeToString(signature.sign());
+    }
+
+    private static boolean isKeyPairValid(PublicKey publicKey, PrivateKey privateKey) {
+        try {
+            String testMessage = "KeyPairValidationTest";
+
+            Signature signature = Signature.getInstance("SHA256withRSA");
+            signature.initSign(privateKey);
+            signature.update(testMessage.getBytes("UTF-8"));
+            byte[] signedData = signature.sign();
+
+            signature.initVerify(publicKey);
+            signature.update(testMessage.getBytes("UTF-8"));
+            return signature.verify(signedData);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
     private static void saveSignatureToDatabase(String hash, String signature) {
         String query = "UPDATE hoadon SET signature = ? WHERE hash = ?";
         try (Connection conn = DBConnect.getConnection();
