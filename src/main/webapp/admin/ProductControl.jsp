@@ -64,6 +64,9 @@
         <li><a class="app-menu__item" href="category-control"><i
                 class='app-menu__icon bx bx-purchase-tag-alt'></i><span class="app-menu__label">Quản lý Danh mục</span></a>
         </li>
+        <li><a class="app-menu__item" href="order-control"><i
+                class='app-menu__icon bx bxs-shopping-bag'></i><span class="app-menu__label">Quản lý đơn hàng</span></a>
+        </li>
     </ul>
 </aside>
 <main class="app-content">
