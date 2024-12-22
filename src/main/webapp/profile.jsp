@@ -101,8 +101,7 @@
                                                 <tr>
                                                     <th>Mã hoá đơn</th>
                                                     <th>Ngày đặt hàng</th>
-                                                    <th>Thay đổi lần cuối</th>
-                                                    <th>Tên người nhận</th>
+                                                    <th>Tên mặt hàng</th>
                                                     <th>Địa chỉ</th>
                                                     <th>Tổng tiền</th>
                                                     <th>Ghi chú</th>
@@ -117,7 +116,6 @@
                                                     <tr>
                                                         <td>${bill.id}</td>
                                                         <td>${bill.ngayLap_hoaDon}</td>
-                                                        <td>${bill.lancuoithaydoi_hoaDon}</td>
                                                         <td>${bill.ten}</td>
                                                         <td>${bill.diachi}</td>
                                                         <td>${bill.tongTien} VNĐ</td>

@@ -28,14 +28,6 @@ public class OrderManagementControl extends HttpServlet {
                 BillDAO billDAO = new BillDAO();
                 List<Bill> listBills = billDAO.getAllBills();
 
-//                //update lại status cho mỗi bill
-//                for (Bill bill : listBills) {
-//                    billDAO.updateOrderVerificationStatus(bill.getId());
-//                }
-//
-//                // refresh lại list bill
-//                listBills = billDAO.getAllBills();
-
                 request.setAttribute("listBills", listBills);
                 request.getRequestDispatcher("admin/OrderManagement.jsp").forward(request, response);
             }

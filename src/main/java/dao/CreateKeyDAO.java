@@ -174,7 +174,7 @@ public class CreateKeyDAO {
 
     public void cancelOrdersAfterLostKey(int userId, Timestamp reportTime) {
         try (Connection conn = new DBConnect().getConnection()) {
-            String sql = "UPDATE hoadon SET status = 'Huy' WHERE id_ngdung = ? AND lancuoithaydoi_hd > ?";
+            String sql = "UPDATE hoadon SET status = 'Huy' WHERE id_ngdung = ? AND ngaylap_hd > ?";
             try (PreparedStatement ps = conn.prepareStatement(sql)) {
                 ps.setInt(1, userId);
                 ps.setTimestamp(2, reportTime);
