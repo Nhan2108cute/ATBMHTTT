@@ -26,7 +26,9 @@ public class BillDAO {
         ResultSet resultSet = null;
         int generatedId = -1;
 
+
         String query = "INSERT INTO hoadon (ngaylap_hd, id_ngdung, ten, dia_chi_giao_hang, tongtien, pt_thanhtoan, ghichu, hash, signature,status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
         try {
             conn = new DBConnect().getConnection();
             ps = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
@@ -42,6 +44,7 @@ public class BillDAO {
             ps.setString(8, bill.getHash());
             ps.setString(9, ""); // Signature để trống
             ps.setString(10, bill.getStatus());
+
 
 
             ps.executeUpdate();
@@ -207,43 +210,77 @@ public class BillDAO {
 
     public List<Bill> getAllBills() {
         List<Bill> list = new ArrayList<>();
-        // Query join 3 bảng: hoadon, nguoidung và public_keys để lấy thông tin xác thực
-        String query = "SELECT h.*, n.hoten, pk.status as key_status, pk.key_value as public_key, " +
-                "pk.end_at, CASE " +
-                "   WHEN pk.status = 'Xac thuc' AND h.signature IS NOT NULL AND h.signature != '' THEN 'Da xac thuc' " +
-                "   ELSE 'Chua xac thuc' " +
-                "END as verification_status " +
-                "FROM hoadon h " +
-                "JOIN nguoidung n ON h.id_ngdung = n.id " +
-                "LEFT JOIN (SELECT * FROM public_keys WHERE status = 'Xac thuc' " +
-                "          ORDER BY created_at DESC LIMIT 1) pk ON h.id_ngdung = pk.user_id " +
-                "ORDER BY h.ngaylap_hd DESC";
+        // Query đơn hàng đã xác thực
+        String verifiedBillsQuery =
+                "SELECT h.*, n.hoten " +
+                        "FROM hoadon h " +
+                        "JOIN nguoidung n ON h.id_ngdung = n.id " +
+                        "WHERE h.status = 'Da xac thuc' " +
+                        "ORDER BY h.ngaylap_hd DESC";
 
-        try (Connection conn = new DBConnect().getConnection();
-             PreparedStatement ps = conn.prepareStatement(query)) {
+        // Query đơn hàng chưa xác thực
+        String unverifiedBillsQuery =
+                "SELECT h.*, n.hoten, pk.status as key_status, pk.created_at as key_created, " +
+                        "pk.end_at as key_end_at, pk.key_value as public_key " +
+                        "FROM hoadon h " +
+                        "JOIN nguoidung n ON h.id_ngdung = n.id " +
+                        "LEFT JOIN (" +
+                        "SELECT user_id, status, created_at, end_at, key_value " +
+                        "FROM public_keys pk1 " +
+                        "WHERE (pk1.status = 'Xac thuc' OR pk1.status = 'Mat') " +
+                        "AND created_at = (" +
+                        "SELECT MAX(created_at) " +
+                        "FROM public_keys pk2 " +
+                        "WHERE pk2.user_id = pk1.user_id" +
+                        ")" +
+                        ") pk ON h.id_ngdung = pk.user_id " +
+                        "WHERE h.status != 'Da xac thuc' " +
+                        "ORDER BY h.ngaylap_hd DESC";
 
-            ResultSet rs = ps.executeQuery();
-            while(rs.next()) {
-                Bill bill = new Bill();
-                bill.setId(rs.getInt("id"));
-                bill.setTen(rs.getString("ten"));
-                bill.setNgayLap_hoaDon(rs.getTimestamp("ngaylap_hd"));
-                bill.setDiachi(rs.getString("dia_chi_giao_hang"));
-                bill.setTongTien(rs.getDouble("tongtien"));
-                bill.setPt_thanhToan(rs.getString("pt_thanhtoan"));
-                bill.setGhiChu(rs.getString("ghichu"));
-                bill.setHash(rs.getString("hash"));
-                bill.setSignature(rs.getString("signature"));
-                bill.setStatus(rs.getString("status"));
+        try (Connection conn = new DBConnect().getConnection()) {
+            // Xử lý đơn hàng đã xác thực
+            try (PreparedStatement ps = conn.prepareStatement(verifiedBillsQuery)) {
+                ResultSet rs = ps.executeQuery();
+                while(rs.next()) {
+                    Bill bill = createBill(rs);
+                    list.add(bill);
+                }
+            }
 
-                User nguoiDung = new User();
-                nguoiDung.setId(rs.getString("id"));
-                bill.setNguoiDung(nguoiDung);
+            // Xử lý đơn hàng chưa xác thực
+            try (PreparedStatement ps = conn.prepareStatement(unverifiedBillsQuery)) {
+                ResultSet rs = ps.executeQuery();
+                while (rs.next()) {
+                    Bill bill = createUnverifiedBill(rs);
 
-                // Cập nhật trạng thái vào database
-                updateBillStatus(bill.getId(), bill.getStatus());
+                    String keyStatus = rs.getString("key_status");
+                    Timestamp keyCreated = rs.getTimestamp("key_created");
+                    Timestamp keyEndAt = rs.getTimestamp("key_end_at");
+                    String signature = rs.getString("signature");
+                    String publicKey = rs.getString("public_key");
 
-                list.add(bill);
+                    // Chỉ xác thực khi có signature và key đang active (Xac thuc + không có end_at)
+                    if (signature != null && !signature.isEmpty() && publicKey != null) {
+                        if ("Xac thuc".equals(keyStatus) && keyEndAt == null) {
+                            if (verifySignature(bill.getHash(), publicKey, signature)) {
+                                bill.setStatus("Da xac thuc");
+                                updateBillStatus(bill.getId(), "Da xac thuc");
+                            } else {
+                                bill.setStatus("Chua xac thuc");
+                                updateBillStatus(bill.getId(), "Chua xac thuc");
+                            }
+                        } else {
+                            // Nếu key đã mất , đơn hàng ở trạng thái chưa xác thực
+                            bill.setStatus("Chua xac thuc");
+                            updateBillStatus(bill.getId(), "Chua xac thuc");
+                        }
+                    } else {
+                        bill.setStatus("Chua xac thuc");
+                        updateBillStatus(bill.getId(), "Chua xac thuc");
+                    }
+
+                    list.add(bill);
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -251,84 +288,79 @@ public class BillDAO {
         return list;
     }
 
+    private Bill createBill(ResultSet rs) throws SQLException {
+        Bill bill = new Bill();
+        bill.setId(rs.getInt("id"));
+        bill.setTen(rs.getString("ten"));
+        bill.setNgayLap_hoaDon(rs.getTimestamp("ngaylap_hd"));
+        bill.setDiachi(rs.getString("dia_chi_giao_hang"));
+        bill.setTongTien(rs.getDouble("tongtien"));
+        bill.setPt_thanhToan(rs.getString("pt_thanhtoan"));
+        bill.setGhiChu(rs.getString("ghichu"));
+        bill.setHash(rs.getString("hash"));
+        bill.setSignature(rs.getString("signature"));
+        bill.setStatus("Da xac thuc");
+
+        User nguoiDung = new User();
+        nguoiDung.setId(rs.getString("id_ngdung"));
+        nguoiDung.setFullName(rs.getString("hoten"));
+        bill.setNguoiDung(nguoiDung);
+
+        return bill;
+    }
+    private Bill createUnverifiedBill(ResultSet rs) throws SQLException {
+        Bill bill = new Bill();
+        bill.setId(rs.getInt("id"));
+        bill.setTen(rs.getString("ten"));
+        bill.setNgayLap_hoaDon(rs.getTimestamp("ngaylap_hd"));
+        bill.setDiachi(rs.getString("dia_chi_giao_hang"));
+        bill.setTongTien(rs.getDouble("tongtien"));
+        bill.setPt_thanhToan(rs.getString("pt_thanhtoan"));
+        bill.setGhiChu(rs.getString("ghichu"));
+        bill.setHash(rs.getString("hash"));
+        bill.setSignature(rs.getString("signature"));
+        bill.setStatus("Da xac thuc");
+
+        User nguoiDung = new User();
+        nguoiDung.setId(rs.getString("id_ngdung"));
+        nguoiDung.setFullName(rs.getString("hoten"));
+        bill.setNguoiDung(nguoiDung);
+
+        return bill;
+    }
+
     private void updateBillStatus(int billId, String status) {
-        String updateQuery = "UPDATE hoadon SET status = ? WHERE id = ?";
+        String query = "UPDATE hoadon SET status = ? WHERE id = ?";
 
         try (Connection conn = new DBConnect().getConnection();
-             PreparedStatement ps = conn.prepareStatement(updateQuery)) {
+             PreparedStatement ps = conn.prepareStatement(query)) {
 
             ps.setString(1, status);
             ps.setInt(2, billId);
             ps.executeUpdate();
-
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-//    private String verifyAndGetOrderStatus(Bill bill) {
-//        String query = "SELECT pk.status as key_status, pk.key_value as public_key, " +
-//                "pk.end_at " +
-//                "FROM public_keys pk " +
-//                "WHERE pk.user_id = ? AND pk.status = 'Xac thuc' " +
-//                "ORDER BY pk.created_at DESC LIMIT 1";
-//
-//        try (Connection conn = new DBConnect().getConnection();
-//             PreparedStatement ps = conn.prepareStatement(query)) {
-//
-//            ps.setString(1, bill.getNguoiDung().getId());
-//
-//            try (ResultSet rs = ps.executeQuery()) {
-//                if (rs.next()) {
-//                    String publicKeyStr = rs.getString("public_key");
-//                    Timestamp endAt = rs.getTimestamp("end_at");
-//
-////                    // Kiểm tra thời hạn khóa
-////                    if (endAt != null && bill.getNgayLap_hoaDon().after(endAt)) {
-////                        return "Khoa het han";
-////                    }
-//
-//                    // Xác thực chữ ký
-//                    boolean isSignatureValid = verifySignature(
-//                            bill.getHash(),
-//                            publicKeyStr,
-//                            bill.getSignature()
-//                    );
-//
-//                    return isSignatureValid ? "Da xac thuc" : "Chua xac thuc";
-//                }
-//            }
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//
-//        return "Chua xac thuc";
-//    }
-//
-//    private boolean verifySignature(String hash, String publicKeyStr, String signatureStr) {
-//        try {
-//            // Làm sạch khóa công khai
-//            String cleanPublicKey = publicKeyStr
-//                    .replace("-----BEGIN PUBLIC KEY-----", "")
-//                    .replace("-----END PUBLIC KEY-----", "")
-//                    .replaceAll("\\s", "");
-//
-//            // Giải mã khóa
-//            byte[] keyBytes = Base64.getDecoder().decode(cleanPublicKey);
-//            X509EncodedKeySpec keySpec = new X509EncodedKeySpec(keyBytes);
-//            KeyFactory keyFactory = KeyFactory.getInstance("RSA");
-//            PublicKey publicKey = keyFactory.generatePublic(keySpec);
-//
-//            // Xác thực chữ ký
-//            Signature signature = Signature.getInstance("SHA256withRSA");
-//            signature.initVerify(publicKey);
-//            signature.update(hash.getBytes(StandardCharsets.UTF_8));
-//
-//            byte[] signatureBytes = Base64.getDecoder().decode(signatureStr);
-//            return signature.verify(signatureBytes);
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//            return false;
-//        }
-//    }
+    private boolean verifySignature(String hash, String publicKeyStr, String signatureStr) {
+        try {
+            // Giải mã khóa
+            byte[] keyBytes = Base64.getDecoder().decode(publicKeyStr);
+            X509EncodedKeySpec keySpec = new X509EncodedKeySpec(keyBytes);
+            KeyFactory keyFactory = KeyFactory.getInstance("RSA");
+            PublicKey publicKey = keyFactory.generatePublic(keySpec);
+
+            // Xác thực chữ ký
+            Signature signature = Signature.getInstance("SHA256withRSA");
+            signature.initVerify(publicKey);
+            signature.update(hash.getBytes(StandardCharsets.UTF_8));
+
+            byte[] signatureBytes = Base64.getDecoder().decode(signatureStr);
+            return signature.verify(signatureBytes);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
 }
