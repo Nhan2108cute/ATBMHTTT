@@ -4,6 +4,7 @@ import dao.BillDAO;
 import dao.CreateKeyDAO;
 import dao.DAO;
 import entity.User;
+import services.EmailService;
 
 import javax.servlet.*;
 import javax.servlet.http.*;
@@ -37,6 +38,7 @@ public class KeyManagementServlet extends HttpServlet {
         int uId = Integer.parseInt(user.getId());
         CreateKeyDAO dao = new CreateKeyDAO();
         boolean keyExists = dao.checkKey(uId);
+
         if (user != null) {
             switch (action) {
                 case "revokeKey":
