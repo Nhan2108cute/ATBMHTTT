@@ -29,7 +29,6 @@ public class BillDAO {
 
         String query = "INSERT INTO hoadon (ngaylap_hd, id_ngdung, ten, dia_chi_giao_hang, tongtien, pt_thanhtoan, ghichu, hash, signature,status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
-
         try {
             conn = new DBConnect().getConnection();
             ps = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
@@ -44,7 +43,8 @@ public class BillDAO {
             ps.setString(7, bill.getGhiChu());
             ps.setString(8, bill.getHash());
             ps.setString(9, ""); // Signature để trống
-            ps.setString(10,bill.getStatus());
+            ps.setString(10, bill.getStatus());
+
 
 
             ps.executeUpdate();
