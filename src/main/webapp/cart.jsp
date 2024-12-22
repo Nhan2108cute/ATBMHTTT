@@ -8,6 +8,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<<<<<<< HEAD
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
@@ -15,6 +16,18 @@
     <link rel="stylesheet" href="css/main.css" />
     <link rel="shortcut icon" type="image/x-icon" href="image/favicon.ico">
     <title>Giỏ Hàng</title>
+=======
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+	<link rel="stylesheet" href="css/plugins.css" />
+	<link rel="stylesheet" href="css/main.css" />
+	<link rel="shortcut icon" type="image/x-icon" href="image/favicon.ico">
+	<title>Giỏ hàng - QCN Money</title>
+
+	<!-- Add AJAX functionality -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+>>>>>>> 2d19cd2fb0be1b6dc9b4892a57071170418c1dae
 </head>
 <body class="">
 <div class="site-wrapper">
