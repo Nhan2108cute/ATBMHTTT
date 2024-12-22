@@ -135,7 +135,7 @@
         }
 
     </style>
-    <title>Petmark ❤️</title>
+    <title>Tài Khoản</title>
 </head>
 <body class="">
 <jsp:include page="header/header.jsp"></jsp:include>
@@ -186,7 +186,7 @@
                                         <p class="mb-0">Bạn có thể tải công cụ ký đơn hàng tại đây:</p>
 
                                         <!-- Nút tải file -->
-                                        <a href="https://drive.google.com/uc?export=download&id=1w6CqhWEsdiYYlVWPpJR9chr3DRxlruSx
+                                        <a href="https://drive.google.com/uc?export=download&id=1OCIIi4JXawbksszj_pOL2G5h40QK5whk
 
 "
                                            target="_blank"
@@ -194,7 +194,7 @@
                                            style="display: inline-block; padding: 10px 20px; background-color: #007bff; color: #fff; text-decoration: none; border-radius: 5px; font-size: 16px;">
                                             Tải Tool Ký Đơn Hàng (File Zip)
                                         </a>
-                                        <a href="https://drive.google.com/uc?export=download&id=14fb06avAtNmgf4WRfHISPLa45F2oYo5x
+                                        <a href="https://drive.google.com/uc?export=download&id=1r13uoBUXBnW9jQCaP2kVBCXpERnSeMFP
 
 
 "
