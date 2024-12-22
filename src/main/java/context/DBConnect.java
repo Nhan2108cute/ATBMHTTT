@@ -11,7 +11,7 @@ public class DBConnect {
     private static final String portNumber = "3306";
     private static final String instance="";//LEAVE THIS ONE EMPTY IF YOUR SQL IS A SINGLE INSTANCE
     private static final String userID = "root";
-    private static final String password = "";
+    private static final String password = "travishuy";
 
 
     public static Connection getConnection()throws Exception {

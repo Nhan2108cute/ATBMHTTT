@@ -360,18 +360,18 @@
                                         <hr class="my-4">
 
                                         <!-- Form yêu cầu đưa key về trạng thái không chấp nhận xác thực mới -->
-<%--                                        <form action="#" method="post" id="revokeKeyForm">--%>
-<%--                                            <div class="row justify-content-center mt-3">--%>
-<%--                                                <div class="col-12 col-md-6 text-center">--%>
-<%--                                                    <p class="text-danger">Đưa key về trạng thái bị vô hiệu hoá</p>--%>
-<%--                                                    <button id="revokeKeyBtn" class="btn btn-danger" type="submit">Yêu--%>
-<%--                                                        cầu--%>
-<%--                                                    </button>--%>
-<%--                                                </div>--%>
-<%--                                            </div>--%>
-<%--                                        </form>--%>
+                                        <form action="#" method="post" id="revokeKeyForm">
+                                            <div class="row justify-content-center mt-3">
+                                                <div class="col-12 col-md-6 text-center">
+                                                    <p class="text-danger">Đưa key về trạng thái bị vô hiệu hoá</p>
+                                                    <button id="revokeKeyBtn" class="btn btn-danger" type="submit">Yêu
+                                                        cầu
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </form>
 
-<%--                                        <hr class="my-4">--%>
+                                        <hr class="my-4">
 
                                         <!-- Form tạo key mới -->
                                         <div action="#" method="post">
@@ -509,66 +509,7 @@
     });
 
 
-
-    $(document).ready(function () {
-
-<<<<<<< HEAD
-        // Bắt sự kiện khi nhấn vào nút "tạo key mới"
-=======
-            // Hiển thị hộp thoại xác nhận
-            var confirmResult = confirm("Bạn có chắc chắn muốn yêu cầu đưa key về trạng thái không chấp nhận mới không?");
-
-            // Nếu người dùng xác nhận, gửi yêu cầu đến servlet
-            if (confirmResult) {
-                console.log("revokeKey");
-                $.post('KeyManagementServlet', {action: 'revokeKey'}, function (response) {
-                    // Xử lý kết quả nếu cầu
-                    alert(response);
-                    location.reload();
-                });
-            }
-        });
-
-        $('#reportLostKeyForm').submit(function (event) {
-            event.preventDefault();
-
-            var confirmResult = confirm("Bạn có chắc chắn muốn báo mất private key không?");
-
-            if (confirmResult) {
-                $.post('KeyManagementServlet', {
-                    action: 'reportLostKey'
-                }, function (response) {
-                    alert(response);
-                    // Refresh trang sau khi xử lý thành công để cập nhật trạng thái các nút
-                    location.reload();
-                }).fail(function(xhr, status, error) {
-                    alert('Có lỗi xảy ra khi báo mất key: ' + error);
-                });
-            }
-        });
-
-        // Kiểm tra điều kiện và tắt/bật button
-        document.addEventListener('DOMContentLoaded', function () {
-            var keyExists = ${sessionScope.keyExists};
-
-            // Quản lý trạng thái các nút
-            var reportLostKeyBtn = document.getElementById('reportLostKeyBtn');
-            //var revokeKeyBtn = document.getElementById('revokeKeyBtn');
-            var genKeyBtn = document.getElementById('genKeyBtn');
-
-            if (keyExists) {
-                reportLostKeyBtn.disabled = false;
-                //revokeKeyBtn.disabled = false;
-                genKeyBtn.disabled = true;
-            } else {
-                reportLostKeyBtn.disabled = true;
-                //revokeKeyBtn.disabled = true;
-                genKeyBtn.disabled = false;
-            }
-        });
-
         // Bắt sự kiện khi nhấn vào nút "Tạo key mới"
->>>>>>> 2d19cd2fb0be1b6dc9b4892a57071170418c1dae
         $('#generateNewKeyForm').submit(function (event) {
             // Ngăn chặn gửi form mặc định
             event.preventDefault();
@@ -578,7 +519,6 @@
             $.post('KeyManagementServlet', {action: 'generateNewKey', publicKey: publicKey},  function (response) {
                 // Xử lý kết quả nếu cần
                 alert(response);
-<<<<<<< HEAD
                 // cập nhật button sau khi tạo key thành cong
                 if (response.includes("đã được xử lý")) {
                     var revokeKeyBtn = document.getElementById('revokeKeyBtn');
@@ -595,9 +535,8 @@
                     // đóng popup
                     document.querySelector(".popup").style.display = "none";
                 }
-=======
-                location.reload();
->>>>>>> 2d19cd2fb0be1b6dc9b4892a57071170418c1dae
+
+                // location.reload();
             }).fail(function () {
                 alert("Có lỗi xảy ra khi gửi Public Key đến server!");
             });
@@ -632,7 +571,6 @@
                 });
             }
         });
-    });
 
 
     var isLoggedIn = <%= session.getAttribute("user") != null %>;
