@@ -13,9 +13,10 @@ public class Bill {
     private double tongTien;
     private String signature;
     private String hash;
+    private String status;
 
 
-    public Bill(int id, User nguoiDung, String ten, Timestamp ngayLap_hoaDon, String diachi, String pt_thanhToan, String ghiChu, double tongTien, String hash, String signature) {
+    public Bill(int id, User nguoiDung, String ten, Timestamp ngayLap_hoaDon, String diachi, String pt_thanhToan, String ghiChu, double tongTien, String hash, String signature,String status) {
         this.id = id;
         this.nguoiDung = nguoiDung;
         this.ten = ten;
@@ -26,6 +27,7 @@ public class Bill {
         this.tongTien = tongTien;
         this.hash = hash;
         this.signature = signature;
+        this.status = status;
     }
 
     public Bill() {
@@ -112,6 +114,14 @@ public class Bill {
         this.hash = hash;
     }
 
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
     @Override
     public String toString() {
         return "Bill{" +
@@ -125,6 +135,7 @@ public class Bill {
                 ", tongTien=" + tongTien +
                 ", signature='" + signature + '\'' +
                 ", hash='" + hash + '\'' +
+                ", status='" + status + '\'' +
                 '}';
     }
 }

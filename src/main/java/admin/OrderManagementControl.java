@@ -1,6 +1,8 @@
 package admin;
 
+import dao.BillDAO;
 import dao.DAO;
+import entity.Bill;
 import entity.Category;
 import entity.Product;
 import entity.User;
@@ -23,12 +25,18 @@ public class OrderManagementControl extends HttpServlet {
             if (u.getAdmin() == 1) {
                 response.sendRedirect("home");
             } else {
-                DAO dao = new DAO();
-                List<Product> list = dao.getAllProduct();
-                List<Category> listC = dao.getAllCategory();
+                BillDAO billDAO = new BillDAO();
+                List<Bill> listBills = billDAO.getAllBills();
 
-                request.setAttribute("listP", list);
-                request.setAttribute("listC", listC);
+                //update lại status cho mỗi bill
+                for (Bill bill : listBills) {
+                    billDAO.updateOrderVerificationStatus(bill.getId());
+                }
+
+                // refresh lại list bill
+                listBills = billDAO.getAllBills();
+
+                request.setAttribute("listBills", listBills);
                 request.getRequestDispatcher("admin/OrderManagement.jsp").forward(request, response);
             }
         }

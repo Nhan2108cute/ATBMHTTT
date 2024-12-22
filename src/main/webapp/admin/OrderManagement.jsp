@@ -7,6 +7,8 @@
 --%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -115,6 +117,7 @@
                                         <i class="fas fa-edit"></i>
                                     </button>
                                 </td>
+                                <td>${b.status}</td>
                             </tr>
                         </c:forEach>
                         </tbody>

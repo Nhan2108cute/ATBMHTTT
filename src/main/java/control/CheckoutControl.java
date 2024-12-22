@@ -61,7 +61,7 @@ public class CheckoutControl extends HttpServlet {
                 String hashValue = SHA.hash(data);
 
                 // Lưu Bill vào database với trường hash
-                Bill bill = new Bill(0, user, ten, new Timestamp(date.getTime()), dia_chi_giao_hang, pt_thanhtoan, ghichu, total + shippingFee, hashValue, "");
+                Bill bill = new Bill(0, user, ten, new Timestamp(date.getTime()), dia_chi_giao_hang, pt_thanhtoan, ghichu, total + shippingFee, hashValue, "","Chua xac thuc");
                 int idBill = billDAO.addBill(bill);
 
                 // Lưu chi tiết đơn hàng
