@@ -40,6 +40,7 @@ public class KeyManagementServlet extends HttpServlet {
                 case "revokeKey":
                     if (keyExists) {
                         dao.reportLostKey(uId);
+                        session.setAttribute("keyExists", false);
                         response.getWriter().write("Yêu cầu hủy key của bạn đã được xử lý");
                     } else {
                         response.getWriter().write("Yêu cầu hủy key của bạn không thành công");
