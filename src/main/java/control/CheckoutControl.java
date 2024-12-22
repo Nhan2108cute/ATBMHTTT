@@ -2,7 +2,6 @@ package control;
 
 import dao.BillDAO;
 import dao.CartDAO;
-import dao.CartDB_DAO;
 import dao.DAO;
 import entity.*;
 import javax.servlet.*;
@@ -16,8 +15,6 @@ import static entity.ElectronicSignatureVerification.*;
 @WebServlet(name = "CheckoutControl", value = "/CheckoutControl")
 public class CheckoutControl extends HttpServlet {
     private BillDAO billDAO = new BillDAO();
-    private CartDB_DAO cartDAO = new CartDB_DAO();
-
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -40,69 +37,55 @@ public class CheckoutControl extends HttpServlet {
         String dia_chi_giao_hang = request.getParameter("dia_chi_giao_hang");
         String pt_thanhtoan = request.getParameter("pt_thanhtoan");
         String ghichu = request.getParameter("ghichu");
+
+        List<Product> list = CartDAO.getGiohang();
         User user = (User) session.getAttribute("user");
 
         try {
             if (user != null) {
-                // Tổng tổng giỏ hàng trong database
-                List<Cart> cartItems = cartDAO.getCartByUserId(Integer.parseInt(user.getId()));
-                if (cartItems.isEmpty()) {
-                    request.setAttribute("message", "Giỏ hàng trống!");
-                    request.getRequestDispatcher("/checkout.jsp").forward(request, response);
-                    return;
+                Date date = new Date();
+                double total = 0;
+                int shippingFee = 0;
+
+                // Tính tổng giá trị đơn hàng
+                HashMap<Product, Integer> map = new HashMap<>();
+                for (Product p : list) {
+                    total += p.getPrice();
+                    map.put(p, map.getOrDefault(p, 0) + 1);
                 }
 
-                // Tính tổng tiền
-                double subtotal = cartDAO.getCartTotal(Integer.parseInt(user.getId()));
-                int shippingFee = subtotal > 0 ? 35000 : 0;
-                double total = subtotal + shippingFee;
+                if (total > 0) shippingFee = 35000;
 
                 // Tạo mã Hash cho dữ liệu đơn hàng
                 String data = ten + " " + dia_chi_giao_hang + " " + pt_thanhtoan + " " + ghichu;
                 String hashValue = SHA.hash(data);
 
                 // Lưu Bill vào database với trường hash
-                Bill bill = new Bill(
-                        0,  // ID tu động tăng
-                        user,
-                        ten,
-                        new Timestamp(System.currentTimeMillis()),
-                        dia_chi_giao_hang,
-                        pt_thanhtoan,
-                        ghichu,
-                        total,
-                        hashValue,
-                        ""  // Signature để trống
-                );
+                Bill bill = new Bill(0, user, ten, new Timestamp(date.getTime()), dia_chi_giao_hang, pt_thanhtoan, ghichu, total + shippingFee, hashValue, "");
+                int idBill = billDAO.addBill(bill);
 
-                // luu hoa đơn
-                int billId = billDAO.addBill(bill);
-
-                // lưu vao chi tiet hoa don
-                for (Cart cartItem : cartItems) {
-                    BillDetails billDetails = new BillDetails(
-                            billId,
-                            cartItem.getProduct(),
-                            cartItem.getQuantity(),
-                            cartItem.getPrice()
-                    );
-                    billDAO.addBillDetails(billDetails);
+                // Lưu chi tiết đơn hàng
+                for (Map.Entry<Product, Integer> entry : map.entrySet()) {
+                    Product product = entry.getKey();
+                    int soLuong = entry.getValue();
+                    billDAO.addBillDetails(new BillDetails(idBill, product, soLuong, product.getPrice()));
                 }
 
-                //xóa gio hang của người dùng sau khi thanh toan thành công
-                cartDAO.clearCart(Integer.parseInt(user.getId()));
-
+                // Xóa giỏ hàng sau khi đặt hàng thành công
+                list.clear();
                 request.setAttribute("message", "Đặt hàng thành công!");
-                // Chuyển hướng về trang chủ
-                response.sendRedirect("home?message=order_success");
 
+                // Chuyển hướng đến trang checkout.jsp
+                RequestDispatcher dispatcher = request.getRequestDispatcher("/checkout.jsp");
+                dispatcher.forward(request, response);
             } else {
                 response.sendRedirect("login.jsp");
             }
         } catch (Exception e) {
             e.printStackTrace();
             request.setAttribute("message", "Có lỗi xảy ra khi đặt hàng!");
-            request.getRequestDispatcher("/checkout.jsp").forward(request, response);
+            RequestDispatcher dispatcher = request.getRequestDispatcher("/checkout.jsp");
+            dispatcher.forward(request, response);
         }
     }
 }
