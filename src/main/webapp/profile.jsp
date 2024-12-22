@@ -360,18 +360,18 @@
                                         <hr class="my-4">
 
                                         <!-- Form yêu cầu đưa key về trạng thái không chấp nhận xác thực mới -->
-                                        <form action="#" method="post" id="revokeKeyForm">
-                                            <div class="row justify-content-center mt-3">
-                                                <div class="col-12 col-md-6 text-center">
-                                                    <p class="text-danger">Đưa key về trạng thái bị vô hiệu hoá</p>
-                                                    <button id="revokeKeyBtn" class="btn btn-danger" type="submit">Yêu
-                                                        cầu
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        </form>
+<%--                                        <form action="#" method="post" id="revokeKeyForm">--%>
+<%--                                            <div class="row justify-content-center mt-3">--%>
+<%--                                                <div class="col-12 col-md-6 text-center">--%>
+<%--                                                    <p class="text-danger">Đưa key về trạng thái bị vô hiệu hoá</p>--%>
+<%--                                                    <button id="revokeKeyBtn" class="btn btn-danger" type="submit">Yêu--%>
+<%--                                                        cầu--%>
+<%--                                                    </button>--%>
+<%--                                                </div>--%>
+<%--                                            </div>--%>
+<%--                                        </form>--%>
 
-                                        <hr class="my-4">
+<%--                                        <hr class="my-4">--%>
 
                                         <!-- Form báo mất key -->
                                         <form action="#" method="post" id="reportLostKeyForm">
@@ -498,13 +498,13 @@
     });
     document.addEventListener('DOMContentLoaded', function () {
         var keyExists = ${sessionScope.keyExists};
-        var revokeKeyBtn = document.getElementById('revokeKeyBtn');
+        var reportLostKeyBtn = document.getElementById('reportLostKeyBtn');
 
         // Kiểm tra điều kiện và tắt/bật button
         if (!keyExists) {
-            revokeKeyBtn.disabled = true;
+            reportLostKeyBtn.disabled = true;
         } else {
-            revokeKeyBtn.disabled = false;
+            reportLostKeyBtn.disabled = false;
         }
     });
 
@@ -537,6 +537,7 @@
                 $.post('KeyManagementServlet', {action: 'revokeKey'}, function (response) {
                     // Xử lý kết quả nếu cầu
                     alert(response);
+                    location.reload();
                 });
             }
         });
@@ -565,16 +566,16 @@
 
             // Quản lý trạng thái các nút
             var reportLostKeyBtn = document.getElementById('reportLostKeyBtn');
-            var revokeKeyBtn = document.getElementById('revokeKeyBtn');
+            //var revokeKeyBtn = document.getElementById('revokeKeyBtn');
             var genKeyBtn = document.getElementById('genKeyBtn');
 
             if (keyExists) {
                 reportLostKeyBtn.disabled = false;
-                revokeKeyBtn.disabled = false;
+                //revokeKeyBtn.disabled = false;
                 genKeyBtn.disabled = true;
             } else {
                 reportLostKeyBtn.disabled = true;
-                revokeKeyBtn.disabled = true;
+                //revokeKeyBtn.disabled = true;
                 genKeyBtn.disabled = false;
             }
         });
@@ -589,6 +590,7 @@
             $.post('KeyManagementServlet', {action: 'generateNewKey', publicKey: publicKey},  function (response) {
                 // Xử lý kết quả nếu cần
                 alert(response);
+                location.reload();
             }).fail(function () {
                 alert("Có lỗi xảy ra khi gửi Public Key đến server!");
             });

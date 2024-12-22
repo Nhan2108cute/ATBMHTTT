@@ -17,7 +17,7 @@
 	<link rel="stylesheet" href="css/plugins.css" />
 	<link rel="stylesheet" href="css/main.css" />
 	<link rel="shortcut icon" type="image/x-icon" href="image/favicon.ico">
-	<title>Giỏ hàng - Petmark ❤️</title>
+	<title>Giỏ hàng - QCN Money</title>
 
 	<!-- Add AJAX functionality -->
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
