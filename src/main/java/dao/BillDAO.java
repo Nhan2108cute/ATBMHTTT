@@ -163,124 +163,74 @@ public class BillDAO {
         }
     }
 
-    // Phương thức kiểm tra và cập nhật trạng thái đơn hàng
-    public void updateOrderVerificationStatus(int billId) {
-        String query = "SELECT h.*, pk.status as key_status, pk.end_at, h.ngaylap_hd " +
-                "FROM hoadon h " +
-                "JOIN public_keys pk ON h.id_ngdung = pk.user_id " +
-                "WHERE h.id = ? " +
-                "ORDER BY pk.created_at DESC LIMIT 1";
-
-        String updateQuery = "UPDATE hoadon SET status = ? WHERE id = ?";
-
-        try (Connection conn = new DBConnect().getConnection();
-             PreparedStatement ps = conn.prepareStatement(query);
-             PreparedStatement updatePs = conn.prepareStatement(updateQuery)) {
-
-            ps.setInt(1, billId);
-            ResultSet rs = ps.executeQuery();
-
-            if (rs.next()) {
-                String keyStatus = rs.getString("key_status");
-                Timestamp endAt = rs.getTimestamp("end_at");
-                Timestamp orderDate = rs.getTimestamp("ngaylap_hd");
-                String newStatus;
-
-                if ("Xac thuc".equals(keyStatus) && endAt == null) {
-                    newStatus = "Da xac thuc";
-                } else if ("Mat".equals(keyStatus) && endAt != null) {
-                    if (orderDate.before(endAt)) {
-                        newStatus = "Da xac thuc";
-                    } else {
-                        newStatus = "Chua xac thuc";
-                    }
-                } else {
-                    newStatus = "Chua xac thuc";
-                }
-
-                // Cập nhật trạng thái mới
-                updatePs.setString(1, newStatus);
-                updatePs.setInt(2, billId);
-                updatePs.executeUpdate();
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
     public List<Bill> getAllBills() {
         List<Bill> list = new ArrayList<>();
-        // Query đơn hàng đã xác thực
-        String verifiedBillsQuery =
-                "SELECT h.*, n.hoten " +
+        String query =
+                "SELECT DISTINCT h.id as bill_id, h.*, n.hoten, " +
+                        "( " +
+                        "    SELECT pk.status " +
+                        "    FROM public_keys pk " +
+                        "    WHERE pk.user_id = h.id_ngdung " +
+                        "    AND pk.created_at <= h.ngaylap_hd " +
+                        "    ORDER BY pk.created_at DESC " +
+                        "    LIMIT 1 " +
+                        ") as key_status, " +
+                        "( " +
+                        "    SELECT pk.created_at " +
+                        "    FROM public_keys pk " +
+                        "    WHERE pk.user_id = h.id_ngdung " +
+                        "    AND pk.created_at <= h.ngaylap_hd " +
+                        "    ORDER BY pk.created_at DESC " +
+                        "    LIMIT 1 " +
+                        ") as key_created, " +
+                        "( " +
+                        "    SELECT pk.end_at " +
+                        "    FROM public_keys pk " +
+                        "    WHERE pk.user_id = h.id_ngdung " +
+                        "    AND pk.created_at <= h.ngaylap_hd " +
+                        "    ORDER BY pk.created_at DESC " +
+                        "    LIMIT 1 " +
+                        ") as key_end_at, " +
+                        "( " +
+                        "    SELECT pk.key_value " +
+                        "    FROM public_keys pk " +
+                        "    WHERE pk.user_id = h.id_ngdung " +
+                        "    AND pk.created_at <= h.ngaylap_hd " +
+                        "    ORDER BY pk.created_at DESC " +
+                        "    LIMIT 1 " +
+                        ") as public_key " +
                         "FROM hoadon h " +
                         "JOIN nguoidung n ON h.id_ngdung = n.id " +
-                        "WHERE h.status = 'Da xac thuc' " +
                         "ORDER BY h.ngaylap_hd DESC";
 
-        // Query đơn hàng chưa xác thực
-        String unverifiedBillsQuery =
-                "SELECT h.*, n.hoten, pk.status as key_status, pk.created_at as key_created, " +
-                        "pk.end_at as key_end_at, pk.key_value as public_key " +
-                        "FROM hoadon h " +
-                        "JOIN nguoidung n ON h.id_ngdung = n.id " +
-                        "LEFT JOIN (" +
-                        "SELECT user_id, status, created_at, end_at, key_value " +
-                        "FROM public_keys pk1 " +
-                        "WHERE (pk1.status = 'Xac thuc' OR pk1.status = 'Mat') " +
-                        "AND created_at = (" +
-                        "SELECT MAX(created_at) " +
-                        "FROM public_keys pk2 " +
-                        "WHERE pk2.user_id = pk1.user_id" +
-                        ")" +
-                        ") pk ON h.id_ngdung = pk.user_id " +
-                        "WHERE h.status != 'Da xac thuc' " +
-                        "ORDER BY h.ngaylap_hd DESC";
+        try (Connection conn = new DBConnect().getConnection();
+             PreparedStatement ps = conn.prepareStatement(query)) {
 
-        try (Connection conn = new DBConnect().getConnection()) {
-            // Xử lý đơn hàng đã xác thực
-            try (PreparedStatement ps = conn.prepareStatement(verifiedBillsQuery)) {
-                ResultSet rs = ps.executeQuery();
-                while(rs.next()) {
-                    Bill bill = createBill(rs);
-                    list.add(bill);
-                }
-            }
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                Bill bill = createBill(rs);
 
-            // Xử lý đơn hàng chưa xác thực
-            try (PreparedStatement ps = conn.prepareStatement(unverifiedBillsQuery)) {
-                ResultSet rs = ps.executeQuery();
-                while (rs.next()) {
-                    Bill bill = createUnverifiedBill(rs);
+                String keyStatus = rs.getString("key_status");
+                Timestamp keyCreated = rs.getTimestamp("key_created");
+                Timestamp keyEndAt = rs.getTimestamp("key_end_at");
+                Timestamp orderDate = rs.getTimestamp("ngaylap_hd");
+                String signature = rs.getString("signature");
+                String publicKey = rs.getString("public_key");
+                String currentStatus = rs.getString("status"); // Lấy trạng thái hiện tại
 
-                    String keyStatus = rs.getString("key_status");
-                    Timestamp keyCreated = rs.getTimestamp("key_created");
-                    Timestamp keyEndAt = rs.getTimestamp("key_end_at");
-                    String signature = rs.getString("signature");
-                    String publicKey = rs.getString("public_key");
-
-                    // Chỉ xác thực khi có signature và key đang active (Xac thuc + không có end_at)
-                    if (signature != null && !signature.isEmpty() && publicKey != null) {
-                        if ("Xac thuc".equals(keyStatus) && keyEndAt == null) {
-                            if (verifySignature(bill.getHash(), publicKey, signature)) {
-                                bill.setStatus("Da xac thuc");
-                                updateBillStatus(bill.getId(), "Da xac thuc");
-                            } else {
-                                bill.setStatus("Chua xac thuc");
-                                updateBillStatus(bill.getId(), "Chua xac thuc");
-                            }
-                        } else {
-                            // Nếu key đã mất , đơn hàng ở trạng thái chưa xác thực
-                            bill.setStatus("Chua xac thuc");
-                            updateBillStatus(bill.getId(), "Chua xac thuc");
-                        }
+                // Chỉ cập nhật trạng thái nếu cần thiết
+                if (signature != null && !signature.isEmpty() && publicKey != null) {
+                    String newStatus = determineStatus(keyStatus, keyEndAt, keyCreated, orderDate,
+                            publicKey, signature, bill.getHash());
+                    if (!newStatus.equals(currentStatus)) {
+                        updateBillStatus(bill.getId(), newStatus);
+                        bill.setStatus(newStatus);
                     } else {
-                        bill.setStatus("Chua xac thuc");
-                        updateBillStatus(bill.getId(), "Chua xac thuc");
+                        bill.setStatus(currentStatus);
                     }
-
-                    list.add(bill);
                 }
+
+                list.add(bill);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -288,9 +238,32 @@ public class BillDAO {
         return list;
     }
 
+    private String determineStatus(String keyStatus, Timestamp keyEndAt, Timestamp keyCreated,
+                                   Timestamp orderDate, String publicKey, String signature, String hash) {
+        if (keyStatus == null || signature == null || signature.isEmpty()) {
+            return "Chua xac thuc";
+        }
+
+        if ("Xac thuc".equals(keyStatus)) {
+            // Key đang active
+            if (keyEndAt == null && orderDate.after(keyCreated)) {
+                return verifySignature(hash, publicKey, signature) ? "Da xac thuc" : "Chua xac thuc";
+            }
+        } else if ("Mat".equals(keyStatus) && keyEndAt != null) {
+            // Key đã bị báo mất
+            if (orderDate.before(keyEndAt)) {
+                return verifySignature(hash, publicKey, signature) ? "Da xac thuc" : "Chua xac thuc";
+            } else {
+                return "Huy"; // Hủy đơn hàng sau thời điểm mất key
+            }
+        }
+
+        return "Chua xac thuc";
+    }
+
     private Bill createBill(ResultSet rs) throws SQLException {
         Bill bill = new Bill();
-        bill.setId(rs.getInt("id"));
+        bill.setId(rs.getInt("bill_id"));
         bill.setTen(rs.getString("ten"));
         bill.setNgayLap_hoaDon(rs.getTimestamp("ngaylap_hd"));
         bill.setDiachi(rs.getString("dia_chi_giao_hang"));
@@ -299,7 +272,7 @@ public class BillDAO {
         bill.setGhiChu(rs.getString("ghichu"));
         bill.setHash(rs.getString("hash"));
         bill.setSignature(rs.getString("signature"));
-        bill.setStatus("Da xac thuc");
+        bill.setStatus(rs.getString("status"));
 
         User nguoiDung = new User();
         nguoiDung.setId(rs.getString("id_ngdung"));
@@ -308,27 +281,6 @@ public class BillDAO {
 
         return bill;
     }
-    private Bill createUnverifiedBill(ResultSet rs) throws SQLException {
-        Bill bill = new Bill();
-        bill.setId(rs.getInt("id"));
-        bill.setTen(rs.getString("ten"));
-        bill.setNgayLap_hoaDon(rs.getTimestamp("ngaylap_hd"));
-        bill.setDiachi(rs.getString("dia_chi_giao_hang"));
-        bill.setTongTien(rs.getDouble("tongtien"));
-        bill.setPt_thanhToan(rs.getString("pt_thanhtoan"));
-        bill.setGhiChu(rs.getString("ghichu"));
-        bill.setHash(rs.getString("hash"));
-        bill.setSignature(rs.getString("signature"));
-        bill.setStatus("Da xac thuc");
-
-        User nguoiDung = new User();
-        nguoiDung.setId(rs.getString("id_ngdung"));
-        nguoiDung.setFullName(rs.getString("hoten"));
-        bill.setNguoiDung(nguoiDung);
-
-        return bill;
-    }
-
     private void updateBillStatus(int billId, String status) {
         String query = "UPDATE hoadon SET status = ? WHERE id = ?";
 
