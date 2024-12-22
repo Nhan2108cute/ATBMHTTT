@@ -990,6 +990,78 @@ public class DAO {
         }
         return billList;
     }
+    public Bill getBillById(int id) {
+        String query = "SELECT * FROM bill WHERE id = ?";
+        try (Connection conn = DBConnect.getConnection();
+             PreparedStatement ps = conn.prepareStatement(query)) {
+            ps.setInt(1, id);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return new Bill(rs.getInt("id"), null, rs.getString("ten"),
+                        rs.getTimestamp("ngayLap_hoaDon"), rs.getString("diachi"),
+                        rs.getString("pt_thanhToan"), rs.getString("ghiChu"),
+                        rs.getDouble("tongTien"), rs.getString("hash"),
+                        rs.getString("signature"), rs.getString("status"));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public List<BillDetails> getBillDetailsByBillId(int billId) {
+        List<BillDetails> list = new ArrayList<>();
+        String query = "SELECT * FROM bill_details WHERE id_hd = ?";
+        try (Connection conn = DBConnect.getConnection();
+             PreparedStatement ps = conn.prepareStatement(query)) {
+            ps.setInt(1, billId);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                Product product = getProductByID(String.valueOf(rs.getInt("id_sp")));
+                list.add(new BillDetails(rs.getInt("id_hd"), product, rs.getInt("soLuong"), rs.getDouble("dongia")));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+//    public void updateBill(int billId, String name, String address) {
+//        String query = "UPDATE bill SET ten = ?, diachi = ? WHERE id = ?";
+//        try (Connection conn = DBConnect.getConnection();
+//             PreparedStatement ps = conn.prepareStatement(query)) {
+//            ps.setString(1, name);
+//            ps.setString(2, address);
+//            ps.setInt(3, billId);
+//            ps.executeUpdate();
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//    }
+
+    public void updateBillDetails(int billId, int productId, int quantity) {
+        String query = "UPDATE bill_details SET soLuong = ? WHERE id_hd = ? AND id_sp = ?";
+        try (Connection conn = DBConnect.getConnection();
+             PreparedStatement ps = conn.prepareStatement(query)) {
+            ps.setInt(1, quantity);
+            ps.setInt(2, billId);
+            ps.setInt(3, productId);
+            ps.executeUpdate();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    public void updateBill(int billId, String name, String address) {
+        String query = "UPDATE bill SET ten = ?, diachi = ? WHERE id = ?";
+        try (Connection conn = DBConnect.getConnection();
+             PreparedStatement ps = conn.prepareStatement(query)) {
+            ps.setString(1, name);
+            ps.setString(2, address);
+            ps.setInt(3, billId);
+            ps.executeUpdate();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
     public List<String> getAllBill() {
         List<String> orderList = new ArrayList<>();
