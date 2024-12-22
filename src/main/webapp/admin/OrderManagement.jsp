@@ -73,6 +73,12 @@
         </ul>
         <div id="clock"></div>
     </div>
+    <!-- Hiển thị thông báo lỗi nếu có -->
+    <c:if test="${not empty param.error}">
+        <div class="alert alert-danger" role="alert">
+            Không thể thay đổi trạng thái đơn hàng đã bị Hủy.
+        </div>
+    </c:if>
     <div class="row">
         <div class="col-md-12">
             <div class="tile">
@@ -113,7 +119,7 @@
                                         <i class="fas fa-trash-alt"></i>
                                     </button>
                                     <button class="btn btn-primary btn-sm edit" type="button" title="Sửa"
-                                            onclick="window.location.href='edit-order?bid=${b.id}'">
+                                            onclick="window.location.href='edit-order?id=${b.id}'">
                                         <i class="fas fa-edit"></i>
                                     </button>
                                 </td>

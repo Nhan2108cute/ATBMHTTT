@@ -207,19 +207,54 @@ public class BillDAO {
             e.printStackTrace();
         }
     }
+    public void updateOrder(int id, String ten, String diachi, String ghichu, double tongtien, String pt_thanhtoan, String status) {
+        String query = "UPDATE hoadon SET ten = ?, dia_chi_giao_hang = ?, ghichu = ?, tongtien = ?, pt_thanhtoan = ?, status = ? WHERE id = ?";
+        try (Connection conn = new DBConnect().getConnection();
+             PreparedStatement ps = conn.prepareStatement(query)) {
+            ps.setString(1, ten);             // Tên khách hàng
+            ps.setString(2, diachi);          // Địa chỉ giao hàng
+            ps.setString(3, ghichu);          // Ghi chú
+            ps.setDouble(4, tongtien);        // Tổng tiền
+            ps.setString(5, pt_thanhtoan);    // Phương thức thanh toán
+            ps.setString(6, status);          // Trạng thái
+            ps.setInt(7, id);                 // ID hóa đơn
+            ps.executeUpdate();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public Bill getBillById(int id) {
+        String query = "SELECT * FROM hoadon WHERE id = ?";
+        try (Connection conn = new DBConnect().getConnection();
+             PreparedStatement ps = conn.prepareStatement(query)) {
+            ps.setInt(1, id);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return new Bill(
+                        rs.getInt("id"),
+                        null, // Thay bằng User nếu cần thông tin
+                        rs.getString("ten"),
+                        rs.getTimestamp("ngaylap_hd"),
+                        rs.getString("dia_chi_giao_hang"),
+                        rs.getString("pt_thanhtoan"),
+                        rs.getString("ghichu"),
+                        rs.getDouble("tongtien"),
+                        rs.getString("hash"),
+                        rs.getString("signature"),
+                        rs.getString("status")
+                );
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
 
     public List<Bill> getAllBills() {
         List<Bill> list = new ArrayList<>();
-        // Query đơn hàng đã xác thực
-        String verifiedBillsQuery =
-                "SELECT h.*, n.hoten " +
-                        "FROM hoadon h " +
-                        "JOIN nguoidung n ON h.id_ngdung = n.id " +
-                        "WHERE h.status = 'Da xac thuc' " +
-                        "ORDER BY h.ngaylap_hd DESC";
-
-        // Query đơn hàng chưa xác thực
-        String unverifiedBillsQuery =
+        String allBillsQuery =
                 "SELECT h.*, n.hoten, pk.status as key_status, pk.created_at as key_created, " +
                         "pk.end_at as key_end_at, pk.key_value as public_key " +
                         "FROM hoadon h " +
@@ -234,43 +269,34 @@ public class BillDAO {
                         "WHERE pk2.user_id = pk1.user_id" +
                         ")" +
                         ") pk ON h.id_ngdung = pk.user_id " +
-                        "WHERE h.status != 'Da xac thuc' " +
                         "ORDER BY h.ngaylap_hd DESC";
 
-        try (Connection conn = new DBConnect().getConnection()) {
-            // Xử lý đơn hàng đã xác thực
-            try (PreparedStatement ps = conn.prepareStatement(verifiedBillsQuery)) {
-                ResultSet rs = ps.executeQuery();
-                while(rs.next()) {
-                    Bill bill = createBill(rs);
+        try (Connection conn = new DBConnect().getConnection();
+             PreparedStatement ps = conn.prepareStatement(allBillsQuery)) {
+
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                Bill bill = createBill(rs);
+
+                // Nếu trạng thái là Hủy, không thực hiện bất kỳ thay đổi nào
+                if ("Huy".equals(bill.getStatus())) {
+                    System.out.println("Đơn hàng ID: " + bill.getId() + " có trạng thái Hủy. Không thay đổi.");
                     list.add(bill);
+                    continue;
                 }
-            }
 
-            // Xử lý đơn hàng chưa xác thực
-            try (PreparedStatement ps = conn.prepareStatement(unverifiedBillsQuery)) {
-                ResultSet rs = ps.executeQuery();
-                while (rs.next()) {
-                    Bill bill = createUnverifiedBill(rs);
+                // Xử lý logic xác thực cho các trạng thái khác
+                String keyStatus = rs.getString("key_status");
+                Timestamp keyEndAt = rs.getTimestamp("key_end_at");
+                String publicKey = rs.getString("public_key");
+                String signature = rs.getString("signature");
 
-                    String keyStatus = rs.getString("key_status");
-                    Timestamp keyCreated = rs.getTimestamp("key_created");
-                    Timestamp keyEndAt = rs.getTimestamp("key_end_at");
-                    String signature = rs.getString("signature");
-                    String publicKey = rs.getString("public_key");
-
-                    // Chỉ xác thực khi có signature và key đang active (Xac thuc + không có end_at)
-                    if (signature != null && !signature.isEmpty() && publicKey != null) {
-                        if ("Xac thuc".equals(keyStatus) && keyEndAt == null) {
-                            if (verifySignature(bill.getHash(), publicKey, signature)) {
-                                bill.setStatus("Da xac thuc");
-                                updateBillStatus(bill.getId(), "Da xac thuc");
-                            } else {
-                                bill.setStatus("Chua xac thuc");
-                                updateBillStatus(bill.getId(), "Chua xac thuc");
-                            }
+                if (signature != null && !signature.isEmpty() && publicKey != null) {
+                    if ("Xac thuc".equals(keyStatus) && keyEndAt == null) {
+                        if (verifySignature(bill.getHash(), publicKey, signature)) {
+                            bill.setStatus("Da xac thuc");
+                            updateBillStatus(bill.getId(), "Da xac thuc");
                         } else {
-                            // Nếu key đã mất , đơn hàng ở trạng thái chưa xác thực
                             bill.setStatus("Chua xac thuc");
                             updateBillStatus(bill.getId(), "Chua xac thuc");
                         }
@@ -278,36 +304,42 @@ public class BillDAO {
                         bill.setStatus("Chua xac thuc");
                         updateBillStatus(bill.getId(), "Chua xac thuc");
                     }
-
-                    list.add(bill);
+                } else {
+                    bill.setStatus("Chua xac thuc");
+                    updateBillStatus(bill.getId(), "Chua xac thuc");
                 }
+
+                list.add(bill);
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
+
+        // In log danh sách hóa đơn
+        for (Bill bill : list) {
+            System.out.println("ID: " + bill.getId() + ", Status: " + bill.getStatus());
+        }
         return list;
     }
+
+
+
+
 
     private Bill createBill(ResultSet rs) throws SQLException {
         Bill bill = new Bill();
         bill.setId(rs.getInt("id"));
-        bill.setTen(rs.getString("ten"));
-        bill.setNgayLap_hoaDon(rs.getTimestamp("ngaylap_hd"));
+        bill.setTen(rs.getString("hoten"));
         bill.setDiachi(rs.getString("dia_chi_giao_hang"));
+        bill.setStatus(rs.getString("status")); // Trạng thái từ database
         bill.setTongTien(rs.getDouble("tongtien"));
         bill.setPt_thanhToan(rs.getString("pt_thanhtoan"));
         bill.setGhiChu(rs.getString("ghichu"));
-        bill.setHash(rs.getString("hash"));
-        bill.setSignature(rs.getString("signature"));
-        bill.setStatus("Da xac thuc");
-
-        User nguoiDung = new User();
-        nguoiDung.setId(rs.getString("id_ngdung"));
-        nguoiDung.setFullName(rs.getString("hoten"));
-        bill.setNguoiDung(nguoiDung);
-
+        bill.setNgayLap_hoaDon(rs.getTimestamp("ngaylap_hd"));
+        System.out.println("Database ID: " + bill.getId() + ", Status: " + bill.getStatus());
         return bill;
     }
+
     private Bill createUnverifiedBill(ResultSet rs) throws SQLException {
         Bill bill = new Bill();
         bill.setId(rs.getInt("id"));
@@ -328,20 +360,53 @@ public class BillDAO {
 
         return bill;
     }
+    public String getBillStatusById(int id) {
+        String status = null;
+        String query = "SELECT status FROM hoadon WHERE id = ?";
+        try (Connection conn = new DBConnect().getConnection();
+             PreparedStatement ps = conn.prepareStatement(query)) {
+            ps.setInt(1, id);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                status = rs.getString("status");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return status;
+    }
 
-    private void updateBillStatus(int billId, String status) {
-        String query = "UPDATE hoadon SET status = ? WHERE id = ?";
 
+    public void updateBillStatus(int billId, String newStatus) {
+        String query = "UPDATE hoadon SET status = ? WHERE id = ? AND status != 'Huy'";
         try (Connection conn = new DBConnect().getConnection();
              PreparedStatement ps = conn.prepareStatement(query)) {
 
-            ps.setString(1, status);
+            // Truy vấn trạng thái hiện tại từ database
+            String currentStatusQuery = "SELECT status FROM hoadon WHERE id = ?";
+            try (PreparedStatement checkPs = conn.prepareStatement(currentStatusQuery)) {
+                checkPs.setInt(1, billId);
+                ResultSet rs = checkPs.executeQuery();
+                if (rs.next()) {
+                    String currentStatus = rs.getString("status");
+
+                    // Không cho phép thay đổi trạng thái nếu trạng thái hiện tại là Hủy
+                    if ("Huy".equals(currentStatus)) {
+                        System.out.println("Không thể thay đổi trạng thái đơn hàng ID: " + billId + " vì trạng thái hiện tại là Hủy.");
+                        return; // Không thực hiện cập nhật
+                    }
+                }
+            }
+
+            // Thực hiện cập nhật nếu trạng thái không phải Hủy
+            ps.setString(1, newStatus);
             ps.setInt(2, billId);
             ps.executeUpdate();
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
+
 
     private boolean verifySignature(String hash, String publicKeyStr, String signatureStr) {
         try {

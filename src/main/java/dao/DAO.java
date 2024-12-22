@@ -1121,6 +1121,15 @@ public class DAO {
 
         }
     }
+    public Bill createBill(ResultSet rs) throws SQLException {
+        Bill bill = new Bill();
+        bill.setId(rs.getInt("id"));
+        bill.setStatus(rs.getString("status")); // Lấy trực tiếp từ database
+        System.out.println("Database ID: " + rs.getInt("id") + ", Status: " + rs.getString("status"));
+        return bill;
+    }
+
+
 
 
     public static void main(String[] args) {

@@ -17,31 +17,17 @@ import java.util.List;
 public class OrderManagementControl extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        HttpSession session = request.getSession();
-        User u = (User) session.getAttribute("user");
-        if(u == null) {
-            response.sendRedirect("login");
-        } else {
-            if (u.getAdmin() == 1) {
-                response.sendRedirect("home");
-            } else {
-                BillDAO billDAO = new BillDAO();
-                List<Bill> listBills = billDAO.getAllBills();
+        BillDAO billDAO = new BillDAO();
+        List<Bill> listBills = billDAO.getAllBills();
 
-//                //update lại status cho mỗi bill
-//                for (Bill bill : listBills) {
-//                    billDAO.updateOrderVerificationStatus(bill.getId());
-//                }
-//
-//                // refresh lại list bill
-//                listBills = billDAO.getAllBills();
-
-                request.setAttribute("listBills", listBills);
-                request.getRequestDispatcher("admin/OrderManagement.jsp").forward(request, response);
-            }
+        // Thêm log để kiểm tra trạng thái
+        for (Bill bill : listBills) {
+            System.out.println("ID: " + bill.getId() + ", Status: " + bill.getStatus());
         }
-    }
 
+        request.setAttribute("listBills", listBills);
+        request.getRequestDispatcher("admin/OrderManagement.jsp").forward(request, response);
+    }
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
